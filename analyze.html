@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>专利智撰家 Q群 259303941 微信fenrir9999</title>
+    <meta name="keywords" content="专利，撰写, 检索, 服务, 流程, 文献查找，工具，辅助">
+    <meta name="description" content="提供专业的专利撰写与检索服务，涵盖详细的专利申请流程指导和高效的专利文献查找方法。">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <script src="static/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="static/all.css">  
+    <style>
+        * {
+            margin: 0;
+            padding:0;
+            box-sizing: border-box;
+            }
+            nav ul {
+            list-style-type: none;
+            display: flex;
+            }
+
+            nav ul li {
+            margin-left: 20px;
+            margin-top:15px;
+            position: relative;
+            }
+
+            nav ul li a {
+            text-decoration: none;
+            color: inherit;
+            }
+        .case {
+            cursor: pointer;
+            margin-left: 15px; 
+            font-size: 13px; 
+            color: #6c757d;
+        }
+        #claimInput {
+            min-width:85vw;
+            height: 160px;
+            padding: 10px;
+            margin:10px;
+            border: 1px solid #0084ff;
+            border-radius: 15px;
+            resize:none;
+            font-size: 13px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .claimInput:empty::before {
+            content: "请在此输入待解析的权利要求书";
+            color: #999;
+        }
+
+        .chart,#chart,#tree-container {
+            width: 100vw;
+            height: 70vh;
+            margin-left: 0px;
+            overflow: auto;
+        }
+        .node text {
+            font: 13px sans-serif;
+        }
+        .node {
+            cursor: pointer;
+        }
+        .link {
+            fill: none;
+            stroke: #008cff;
+            stroke-width: 1.5px;
+        }
+        
+        .label {
+            font-size: 12px;
+            fill: #263238;
+            text-anchor: middle;
+        }
+        .shadow {
+            filter: drop-shadow(3px 3px 2px rgba(0, 0, 0, 0.2));
+        }
+        .highlight{
+            background-color: #ff4f4f;
+            color:white;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <ul>
+                <a href="/home" class="brand">
+                  专利智撰家
+                </a>
+                <li>
+                    <a href="/patent">专利检索</a>
+                </li>
+                <li>
+                    <a href="/reexam">复审无效</a>
+                </li>
+                <li>
+                    <a href="/write">辅助撰写</a>
+                </li>
+                <li>
+                    <a href="/analyze">专利分析</a>
+                </li>
+                <li>
+                    <a href="/eureka">EUREKA</a>
+                </li>
+                <li>
+                    <a href="/design">外观编辑</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="case">
+        > 示例：
+        <span class="case" onclick="fillQuestion(this,1)">一种暖通设备</span>
+        <span class="case" onclick="fillQuestion(this,2)">一种热泵设备</span>
+    </div>
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="display: flex;">
+            
+            <div id="claimInput" class="claimInput" contenteditable></div>
+            <div style="display: flex; flex-direction: column;">
+                <p style="font-size:12px;margin-right:50px;border:1px solid #0084ff;border-radius:10px;padding:5px">如点击后无响应，请重新提交，点击相应气泡后，在会在左侧高亮显示对应文本</p>
+                <!-- <button class="button" id="analyzeBtn" style="margin-top:10px" onclick="parseClaim()">静态解析</button> -->
+                <button class="button" id="dynamicsBtn" style="margin-top:10px" onclick="dynamics_parseClaim()">动态解析</button>
+            </div>
+        </div>
+        <!-- <div id="tree-container"></div> -->
+        <div class="chart"><svg id="chart"></svg></div>
+    </div>
+    <script>
+
+        function fillQuestion(element,num) {
+            const questionInput = document.getElementById("claimInput");
+            if (num == 1) {
+                questionInput.textContent = '1.一种暖通设备，其特征在于，包括壳体组件和电控盒，所述壳体组件包括壳体、中隔板和导风单元，所述壳体具有中空的容纳腔，所述中隔板设置于所述容纳腔内，且将所述容纳腔分隔成相互连通的第一容纳腔和第二容纳腔，所述第一容纳腔和所述第二容纳腔通过连通口相互连通，且所述第一容纳腔被配置为相对所述第二容纳腔形成负压区域，以使所述第二容纳腔内的气流吸入所述第一容纳腔；所述导风单元和所述电控盒设置于所述中隔板上，所述电控盒面向所述第一容纳腔的一侧具有散热翅片；所述导风单元构成导风通道，所述导风通道位于所述散热翅片上侧，所述导风通道具有面向所述散热翅片的开口，所述导风通道被构造为将由所述第二容纳腔吸入的所述气流导向所述散热翅片。';
+            } else if (num == 2) {
+                questionInput.textContent = '1.一种热泵设备，其特征在于，包括：箱体，所述箱体的一侧设有开口和可拆卸覆盖于所述开口的面板；热泵组件，包括压缩机、第一换热器和第二换热器，所述第一换热器设于所述箱体内，并将所述箱体的内腔分隔形成进风腔和出风腔，所述压缩机和所述第二换热器设于所述进风腔内，所述第二换热器包括冷媒管路和水流管路，所述冷媒管路、所述压缩机、所述第一换热器和所述第二换热器连接形成冷媒循环回路；风机，设于所述出风腔内；管路组件，设于所述进风腔内，所述管路组件包括与所述水流管路连接的水泵、进水管和出水管；电控盒，设于所述进风腔且靠近所述开口布置，所述电控盒与所述箱体转动连接，所述电控盒能够翻转由所述开口移入所述进风腔，或者由所述开口移出所述进风腔以显露所述压缩机、所述第二换热器和所述管路组件。'
+            }
+        }
+
+        async function dynamics_parseClaim() {
+            const prompt = document.getElementById('claimInput').textContent.replace(/。/g,"。%0A").replace(/%/g,"%25");
+            const dynanalyzeBtn = document.getElementById('dynamicsBtn');
+            var data = {}
+            if (!prompt) return
+
+            dynanalyzeBtn.textContent = '';
+            dynanalyzeBtn.classList.add('loading');
+            dynanalyzeBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`/api/doubao?type=dynamicanalyze&prompt=${prompt}`, {method: 'POST'});
+                data = await response.json();
+                data = data['reply'].replace(/[\n ]/g,'').replace(/'/g,'"')
+                data = JSON.parse(data);
+                var data_1 = data["nodes"];
+                var data_2 = data["links"];
+                drawDynamicsTree(data_1,data_2);
+                // document.getElementById('tree-container').style.display = 'none';
+                // document.getElementById('chart').style.display = 'block';
+            } catch (error) {
+                console.log(`Error:${error.message}`);
+            }
+            
+            dynanalyzeBtn.textContent = '动态解析';
+            dynanalyzeBtn.classList.remove('loading');
+            dynanalyzeBtn.disabled = false;
+        // const nodes = [
+        //     { id: "隔热装置", group: 1 },
+        //     { id: "主体组件", group: 2 },
+        //     { id: "底层", group: 3 },
+        //     { id: "第一侧壁", group: 3 },
+        //     { id: "内衬", group: 3 },
+        //     { id: "侧壁隔热部分", group: 3 },
+        //     { id: "盖组件", group: 2 },
+        //     { id: "上层", group: 3 },
+        //     { id: "盖隔热层", group: 3 },
+        //     { id: "盖衬里", group: 3 },
+        //     { id: "储存隔室", group: 2 },
+        //     { id: "封闭件", group: 2 },
+        //     { id: "隔热突片", group: 2 },
+        //     { id: "第一磁性元件", group: 3 },
+        //     { id: "第二磁性元件", group: 3 }
+        // ];
+
+        // const links = [
+        //     { source: "隔热装置", target: "主体组件", label: "包含" },
+        //     { source: "隔热装置", target: "盖组件", label: "包含" },
+        //     { source: "隔热装置", target: "储存隔室", label: "形成" },
+        //     { source: "隔热装置", target: "封闭件", label: "包含" },
+        //     { source: "隔热装置", target: "隔热突片", label: "包含" },
+        //     { source: "主体组件", target: "底层", label: "包含" },
+        //     { source: "主体组件", target: "第一侧壁", label: "包含" },
+        //     { source: "主体组件", target: "内衬", label: "包含" },
+        //     { source: "主体组件", target: "侧壁隔热部分", label: "包含" },
+        //     { source: "盖组件", target: "上层", label: "包含" },
+        //     { source: "盖组件", target: "盖隔热层", label: "包含" },
+        //     { source: "盖组件", target: "盖衬里", label: "包含" },
+        //     { source: "储存隔室", target: "主体组件", label: "由...形成" },
+        //     { source: "储存隔室", target: "盖组件", label: "由...形成" },
+        //     { source: "封闭件", target: "主体组件", label: "连接" },
+        //     { source: "封闭件", target: "盖组件", label: "连接" },
+        //     { source: "隔热突片", target: "内衬", label: "由...形成" },
+        //     { source: "隔热突片", target: "侧壁隔热部分", label: "由...形成" },
+        //     { source: "隔热突片", target: "第一磁性元件", label: "包含" },
+        //     { source: "盖组件", target: "第二磁性元件", label: "包含" },
+        //     { source: "第一磁性元件", target: "第二磁性元件", label: "接合" }
+        // ];
+        // drawDynamicsTree(nodes,links);
+        }
+        const width = 1600;
+        const height = 660;
+
+        function drawDynamicsTree(data_1,data_2) {
+            d3.select("#chart").html("");
+
+            // 创建力导向布局
+            d3.select("#chart")
+                .append("defs")
+                .append("radialGradient")
+                .attr("id", "bubbleGradient")
+                .attr("cx", "70%")
+                .attr("cy", "25%")
+                .attr("r", "50%")
+                .attr("fx", "40%")
+                .attr("fy", "25%")
+                .selectAll("stop")
+                .data([
+                        { offset: "0%", color: "#ffffff", opacity: 1 },
+                        { offset: "100%", color: "#008cff", opacity: 1 }
+                    ])
+                .enter()
+                .append("stop")
+                .attr("offset", d => d.offset)
+                .style("stop-color", d => d.color)
+                .style("stop-opacity", d => d.opacity);
+            const nodes = data_1;
+            const links = data_2;
+
+            const svg = d3.select("#chart")
+                .append("svg")
+                .attr("width", width)
+                .attr("height",height)
+                .append("g");
+                // .attr("transform", "translate(100,20)");
+                
+            const radiusScale = d3.scaleLinear()
+                .domain([d3.min(nodes, d => d.group), d3.max(nodes, d => d.group)])
+                .range([35, 15]);
+
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(d => {
+                    const sourceRadius = radiusScale(d.source.group);
+                    const targetRadius = radiusScale(d.target.group);
+                    const baseLength = (sourceRadius + targetRadius);
+                    return Math.min(500, Math.max(200, baseLength));
+                }))
+                .force("charge", d3.forceManyBody().strength(-100))
+                .force("center", d3.forceCenter(width/2, height/2));
+
+            // 创建连线
+            const link = svg.append("g")
+                .attr("stroke-opacity", 0.6)
+                .selectAll("line")
+                .data(links)
+                .join("line")
+                .attr("class", "link");
+
+            // 创建连线标签
+            const linkLabel = svg.append("g")
+                .attr("class", "link-labels")
+                .selectAll("text")
+                .data(links)
+                .join("text")
+                .attr("class", "label")
+                .text(d => d.label);
+
+            // 创建节点
+            const node = svg.append("g")
+                .attr("class", "shadow")
+                .selectAll("circle")
+                .data(nodes)
+                .join("circle")
+                .attr("class", "node")
+                .attr("r", d => {
+                    const maxGroup = d3.max(nodes, n => n.group);
+                    const minGroup = d3.min(nodes, n => n.group);
+                    const maxRadius = 35; // 最大半径
+                    const minRadius = 15; // 最小半径
+                    return maxRadius - (d.group - minGroup) * ((maxRadius - minRadius) / (maxGroup - minGroup));
+                })
+                .style("fill", "url(#bubbleGradient)")
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended))
+                    .on("click", function (event, d) {
+                        var keyword = d.id.replace(/—权\d+/g,'').replace(/—\d+/g,'').replace(/(\d+)/g,'').replace(/（\d+）/g,'');
+                        highlightText (keyword)
+                    });
+            // 创建节点文本
+            const nodeText = svg.append("g")
+                .selectAll("text")
+                .data(nodes)
+                .join("text")
+                .attr("class", "label")
+                .attr("dy", ".35em")
+                .text(d => d.id);
+
+            // 更新节点和连线位置
+            simulation.on("tick", () => {
+                link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+                linkLabel
+                .attr("x", d => (d.source.x + d.target.x) / 2)
+                .attr("y", d => (d.source.y + d.target.y) / 2);
+
+                node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+
+                nodeText
+                .attr("x", d => d.x)
+                .attr("y", d => d.y);
+            });
+
+            // 拖拽事件处理函数
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+            function boundaryCheck() {
+                nodes.forEach(node => {
+                    const radius = radiusScale(node.group);
+                    if (node.x - radius < 0) {
+                        node.x = radius;
+                        node.vx = -node.vx;
+                    } else if (node.x + radius > width) {
+                        node.x = width - radius;
+                        node.vx = -node.vx;
+                    }
+                    if (node.y - radius < 0) {
+                        node.y = radius;
+                        node.vy = -node.vy;
+                    } else if (node.y + radius > height) {
+                        node.y = height - radius;
+                        node.vy = -node.vy;
+                    }
+                });
+            }
+            simulation.on("tick", () => {
+                boundaryCheck();
+                link
+                   .attr("x1", d => d.source.x)
+                   .attr("y1", d => d.source.y)
+                   .attr("x2", d => d.target.x)
+                   .attr("y2", d => d.target.y);
+
+                linkLabel
+                   .attr("x", d => (d.source.x + d.target.x) / 2)
+                   .attr("y", d => (d.source.y + d.target.y) / 2);
+
+                node
+                   .attr("cx", d => d.x)
+                   .attr("cy", d => d.y);
+
+                nodeText
+                   .attr("x", d => d.x)
+                   .attr("y", d => d.y);
+            });
+        }
+    </script>
+    <script>
+        function highlightText(keyword) {
+            // 获取模拟输入框的 div 元素
+            const inputDiv = document.getElementById('claimInput');
+            // 获取 div 中的文本内容
+            let text = inputDiv.innerHTML;
+            var highlightedText = text.replaceAll('<span class="highlight">', '').replaceAll('</span>', '');
+            // 要高亮显示的关键字
+            // 使用正则表达式匹配关键字并替换为包含 span 标签的高亮文本
+            highlightedText = highlightedText.replace(new RegExp(keyword, 'g'), '<span class="highlight">$&</span>');
+            // 将替换后的内容重新赋值给 div 的 innerHTML
+            inputDiv.innerHTML = highlightedText;
+        }
+    </script>
+    <script>
+        async function parseClaim() {
+            const prompt = document.getElementById('claimInput').value.replace(/%/g,"%25");
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            var data = {}
+            if (!prompt) return
+            analyzeBtn.textContent = '';
+            analyzeBtn.classList.add('loading');
+            analyzeBtn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/doubao?type=analyze&prompt=${prompt}`, {method: 'POST'});
+                data = await response.json();
+                data = data['reply'].replace(/[\n ]/g,'').replace(/'/g,'"');
+
+                hierarchy = JSON.parse(data);
+                drawTree(hierarchy);
+                document.getElementById('tree-container').style.display = 'block';
+                document.getElementById('chart').style.display = 'none';
+            } catch (error) {
+                console.log(`Error:${error.message}`);
+            }
+            analyzeBtn.textContent = '静态解析';
+            analyzeBtn.classList.remove('loading');
+            analyzeBtn.disabled = false;
+        }
+
+        function drawTree(data) {
+            d3.select("#tree-container").html("");
+            d3.select("#chart").html("");
+            
+            const treeLayout = d3.tree().size([600,1200]); //高，宽 各标签的尺寸
+            const root = d3.hierarchy(data);
+            treeLayout(root);
+
+            const svg = d3.select("#tree-container")
+                .append("svg")
+                .attr("width", 3000) // 容器尺寸
+                .attr("height",1200)
+                .append("g")
+                .attr("transform", "translate(100,20)");
+
+            // 绘制连线
+            svg.selectAll(".link")
+                .data(root.links())
+                .enter()
+                .append("path")
+                .attr("class", "link")
+                .attr("d", d3.linkHorizontal()
+                    .x(d => d.y)
+                    .y(d => d.x));
+
+            // 绘制节点
+            const node = svg.selectAll(".node")
+                .data(root.descendants())
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", d => `translate(${d.y},${d.x})`)
+                // .on("click", function(event, d) {
+                //     // 清除所有高亮
+                //     d3.selectAll(".highlight").classed("highlight", false);
+                    
+                //     // 设置当前元素高亮
+                //     if(d.data.featureId) {
+                //         d3.selectAll(`span[data-feature="${d.data.featureId}"]`)
+                //             .classed("highlight", true);
+                //     }
+                // });
+
+            node.append("circle")
+                .attr("r", 5)
+                .attr("fill", d => d.data.color);
+
+            node.append("text")
+                .attr("dx",  d => d.children ? -8 : 8)
+                .attr("dy", -2)
+                .style("text-anchor", d => d.children ? "end" : "start")
+                .text(d => d.data.name);
+        }
+    </script>
+</body>
+</html>

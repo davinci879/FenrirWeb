@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专利智撰家 Q群 259303941 微信fenrir9999</title>
+    <meta name="keywords" content="专利，撰写, 检索, 服务, 流程, 文献查找，工具，辅助">
+    <meta name="description" content="提供专业的专利撰写与检索服务，涵盖详细的专利申请流程指导和高效的专利文献查找方法。">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="static/all.css">
+    <style>
+        * {
+            margin: 0;
+            padding:0;
+            box-sizing: border-box;
+            }
+            nav ul {
+            list-style-type: none;
+            display: flex;
+            }
+
+            nav ul li {
+            margin-left: 20px;
+            margin-top:15px;
+            position: relative;
+            }
+
+            nav ul li a {
+            text-decoration: none;
+            color: inherit;
+            }
+        .reexam{
+            width: 150px;
+            height: 20px;
+            margin: 1px;
+            border-radius: 5px;
+            border: 1px solid #0099ff;
+            padding:1px;
+        }
+        #results-container {
+            margin-left: 10px;
+            height:80vh;
+            overflow-y: scroll;
+        }
+        #tooltip {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <ul>
+                <a href="/home" class="brand">
+                  专利智撰家
+                </a>
+                <li>
+                    <a href="/patent">专利检索</a>
+                </li>
+                <li>
+                    <a href="/reexam">复审无效</a>
+                </li>
+                <li>
+                    <a href="/write">辅助撰写</a>
+                </li>
+                <li>
+                    <a href="/analyze">专利分析</a>
+                </li>
+                <li>
+                    <a href="/eureka">EUREKA</a>
+                </li>
+                <li>
+                    <a href="/design">外观编辑</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div style="display: flex;font-size:12px;margin-left:12px;">>> 数据更新至 2025-10&nbsp;&nbsp;&nbsp;>> 收录案件数量 365315&nbsp;&nbsp;&nbsp;>> 关键词之间用 and 或 or 连接(不区分大小写)</div>
+    <form id="searchForm">
+        <div style="margin-left:10px;">
+            <div>
+                <input class="reexam" type="text" id="name" placeholder="专利名称 eg:机械键盘">
+                <input class="reexam" type="text" id="app_num" placeholder="申请号 eg:2023">
+                <input class="reexam" type="text" id="ipc_class" placeholder="IPC分类号 eg:B60J">
+                <input class="reexam" type="text" id="decision_num" placeholder="决定号 eg：12345">
+                <input class="reexam" type="text" id="re_code" placeholder="委内编号 eg:WX1234">
+                <input class="reexam" type="text" id="re_applicant" placeholder="复审/无效请求人 eg:华为">                
+                <input class="reexam" type="text" id="re_patentee" placeholder="专利权人 eg:华为">
+                <input class="reexam" type="text" id="decision_date" placeholder="决定日 eg:2016-07">
+                <input class="reexam" type="text" id="legal_base" placeholder="法律依据 eg:22.3">
+                <input class="reexam" type="text" id="decision_revise" placeholder="决定要点">
+                <input class="reexam" type="text" id="decision_text" placeholder="正文">
+
+                <div style="display: flex;">
+                    <input id="advanced-search" style="margin:5px;width:70%;border-radius:10px;box-shadow:None;height:30px;padding: 10px;" placeholder="请输入检索内容">
+                    <select id="reexam_type">
+                        <option value="wx">无效决定</option>
+                        <option value="fs">复审决定</option>
+                    </select>
+                    <select id="decision_result">
+                        <option value="全部">全部</option>
+                        <option value="全部无效">全部无效</option>
+                        <option value="部分无效">部分无效</option>
+                        <option value="维持有效">维持有效</option>
+                        <option value="撤销驳回">撤销驳回</option>
+                        <option value="维持驳回">维持驳回</option>
+                    </select>
+                    <button id="submit-btn" style="margin:5px;width:85px;">提 交</button>
+                    <button id="export-btn" style="margin:5px;width:85px;" disabled>全部下载</button>
+                    <div id="result-count" style="margin-top:18px"></div>
+                    <div id="tooltip">
+                        TI:专利名称<br>
+                        IPC:IPC分类号<br>
+                        DD:决定日<br>
+                        DN:决定号<br>
+                        AN:申请号<br>
+                        RP:复审/无效请求人<br>
+                        PT:专利权人<br>
+                        RC:委内编号<br>
+                        LB:法律依据<br>
+                        DR:决定要点<br>
+                        AT:正文<br>
+                        eg: TI=机械键盘 AND (IPC=B60J OR IPC=B60K) AND AT=公知常识
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+        <div id="results-container"></div>
+    <script>
+        function homePage() {
+            window.location.href = '/home';
+        }
+    </script>
+    <script>
+        const input = document.getElementById('advanced-search');
+        const tooltip = document.getElementById('tooltip');
+    
+        input.addEventListener('mouseover', function () {
+          const rect = input.getBoundingClientRect();
+          tooltip.style.left = rect.right + 'px';
+          tooltip.style.top = rect.top + 'px';
+          tooltip.style.display = 'block';
+        });
+    
+        input.addEventListener('mouseout', function () {
+          tooltip.style.display = 'none';
+        });
+    </script>
+    <script>
+        const exportButton = document.getElementById('export-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        let results = [];
+        submitBtn.addEventListener('click', async () => {
+            const searchdata = {
+                    name: '',
+                    ipc_class: '',
+                    app_num: '',
+                    decision_num: '',
+                    re_code: '',
+                    re_applicant: '',
+                    re_patentee: '',
+                    decision_date: '',
+                    decision_revise: '',
+                    legal_base: '',
+                    decision_text: '',
+                    reexam_type: '',
+                    decision_result: ''
+                };
+            searchdata.name = document.getElementById('name').value.trim();
+            searchdata.app_num = document.getElementById('app_num').value.trim();
+            searchdata.decision_num = document.getElementById('decision_num').value.trim();
+            searchdata.re_code = document.getElementById('re_code').value.trim();
+            searchdata.re_applicant = document.getElementById('re_applicant').value.trim();
+            searchdata.re_patentee = document.getElementById('re_patentee').value.trim();
+            searchdata.decision_date = document.getElementById('decision_date').value.trim();
+            searchdata.ipc_class = document.getElementById('ipc_class').value.trim();
+            searchdata.decision_revise = document.getElementById('decision_revise').value.trim();
+            searchdata.legal_base = document.getElementById('legal_base').value.trim();
+            searchdata.decision_text = document.getElementById('decision_text').value.trim();
+            searchdata.reexam_type = document.getElementById('reexam_type').value.trim();
+            searchdata.decision_result = document.getElementById('decision_result').value.trim();
+            const advanced_search = document.getElementById('advanced-search').value.trim();
+            if (advanced_search){
+                const conditions = advanced_search.split(/\s*(?:and|AND)\s*/);
+                conditions.forEach((condition) => {
+                    if (condition.includes('TI=')) {
+                        searchdata.name = condition.split('=')[1];
+                    } else if (condition.includes('IPC=')) {
+                        searchdata.ipc_class = condition.split('=')[1];
+                    } else if (condition.includes('DD=')) {
+                        searchdata.decision_date = condition.split('=')[1];
+                    } else if (condition.includes('DN=')) {
+                        searchdata.decision_num = condition.split('=')[1];
+                    } else if (condition.includes('RP=')) {
+                        searchdata.re_applicant = condition.split('=')[1];
+                    } else if (condition.includes('PT=')) {
+                        searchdata.re_patentee = condition.split('=')[1];
+                    } else if (condition.includes('RC=')) {
+                        searchdata.re_code = condition.split('=')[1];
+                    } else if (condition.includes('LB=')) {
+                        searchdata.legal_base = condition.split('=')[1];
+                    } else if (condition.includes('AN=')) {
+                        searchdata.app_num = condition.split('=')[1];
+                    } else if (condition.includes('DR=')) {
+                        searchdata.decision_revise = condition.split('=')[1];
+                    } else if (condition.includes('AT=')) {
+                        searchdata.decision_text = condition.split('=')[1];
+                    } 
+                });
+            }
+            var highlights = [];
+            for (const key in searchdata) {
+                if (searchdata.hasOwnProperty(key) && searchdata[key] != '全部' && searchdata[key] != '无效' && searchdata[key] != '复审' && searchdata[key] != '全部无效' && searchdata[key] != '部分无效' && searchdata[key] != '维持有效' && searchdata[key] != '撤销驳回'  && searchdata[key] != '维持驳回') {
+                    const value = searchdata[key];
+                    if (value.includes('or') || value.includes('and') || value.includes('OR') || value.includes('AND')){
+                        const parts = value.split(/\s+(?:or|and|OR|AND)\s+/);
+                        highlights.push(...parts);
+                    } else if (value) {
+                        highlights.push(value);
+                    }
+                }
+            }
+            const queryString = `reexam_type=${encodeURIComponent(searchdata.reexam_type)}&name=${encodeURIComponent(searchdata.name)}&app_num=${encodeURIComponent(searchdata.app_num)}&decision_num=${encodeURIComponent(searchdata.decision_num)}&re_code=${encodeURIComponent(searchdata.re_code)}&re_applicant=${encodeURIComponent(searchdata.re_applicant)}&re_patentee=${encodeURIComponent(searchdata.re_patentee)}&decision_date=${encodeURIComponent(searchdata.decision_date)}&ipc_class=${encodeURIComponent(searchdata.ipc_class)}&decision_revise=${encodeURIComponent(searchdata.decision_revise)}&legal_base=${encodeURIComponent(searchdata.legal_base)}&decision_text=${encodeURIComponent(searchdata.decision_text)}&decision_result=${encodeURIComponent(searchdata.decision_result)}`;
+            try {
+                submitBtn.textContent = '';
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+                const startTime = Date.now();
+                const response = await fetch(`http://www.fenrir.fun/searchreexam?${queryString}`, {method: 'POST'});
+                results = await response.json();
+                const endTime = Date.now();
+                const elapsedTime = (endTime - startTime) / 1000;
+                const resultsContainer = document.getElementById('results-container');
+                resultsContainer.innerHTML = '';
+                if (!results){
+                    const div = document.createElement('div');
+                    div.className ='result-div';
+                    div.style.border = '1px solid #0077ff';
+                    div.style.padding = '10px';
+                    div.style.margin = '10px';
+                    div.innerHTML = `服务器连接失败，请重试`; 
+                    resultsContainer.appendChild(div);
+                }
+                else if (results){
+                    const div = document.createElement('div');
+                    document.getElementById('result-count').innerHTML = '';
+                    div.innerHTML = `共检索到${results.count}条 复审/无效决定，耗时${elapsedTime.toFixed(2)}秒 <br>`;
+                    div.style.marginLeft = '10px';
+                    div.style.fontSize = '12px';
+                    document.getElementById('result-count').appendChild(div);
+                    results.results.forEach((result,index) => {
+                        if (result.decision_result == '撤销驳回'){
+                            result_color = '#64aa46';
+                        }
+                        else if (result.decision_result == '全部无效'){
+                            result_color = '#4caeff';
+                        }
+                        else if (result.decision_result == '部分无效'){
+                            result_color = '#493f3f';
+                        }
+                        else{
+                            result_color = '#9e344b';
+                        }
+                        const div = document.createElement('div');
+                        div.className ='result-div';
+                        div.style.border = '1px solid #0077ff';
+                        div.style.padding = '10px';
+                        div.style.margin = '10px';
+                        div.style.fontSize = '15px';
+                        div.style.height = '100px auto';
+                        div.innerHTML = `${index + 1}. <span style='color:#808080'>决定号：</span>${result.decision_num}   <span style="padding:1px 5px;border-radius:5px;color:white;background-color:${result_color};">${result.decision_result}</span><br>
+                        <span style='color:#808080'>委内编号：</span>${result.re_code}<br>
+                        <span style='color:#808080'>专利名称：</span>${result.name}<br>
+                        <span style='color:#808080'>IPC分类号：</span>${result.ipc_class}<br>
+                        <span style='color:#808080'>申请号：</span>${result.app_num}<br>
+                        <span style='color:#808080'>决定日：</span>${result.decision_date}<br>
+                        <span style='color:#808080'>专利权人：</span>${result.re_patentee}<br>
+                        <span style='color:#808080'>请求人：</span>${result.re_applicant}<br>
+                        <span style='color:#808080'>法律依据：</span>${result.legal_base}<br>
+                        <span style='color:#808080'>决定要点：</span>${result.decision_revise}<br>
+                        <div style='display: flex;'>
+                        <div id=download-id-${index + 1}><span style='background-color:rgb(22,120,194);color:white;cursor:pointer;width:100px;height:30px;border:solid 1px #808080;border-radius:5px;text-align:center;line-height:30px;'>&nbsp&nbsp下载&nbsp&nbsp</span></div>&nbsp&nbsp
+                        <div id=result-id-${index + 1}><span style='color:rgb(22,120,194);cursor:pointer;width:100px;height:30px;border:solid 1px #808080;border-radius:5px;text-align:center;line-height:30px;'>&nbsp&nbsp预览&nbsp&nbsp</span></div>
+                        </div>`;
+                        resultsContainer.appendChild(div);
+                        document.getElementById(`download-id-${index + 1}`).addEventListener('click', function() {
+                            const item = results.results[index];
+                            if (!item) {
+                                console.log('>> 无可导出的数据！');
+                                return;
+                            }
+                            const content = `审查结果：${item.decision_result}\n决定号：${item.decision_num}\n委内编号：${item.re_code}\n专利名称：${item.name}\n专利号：${item.app_num}\n分类号：${item.ipc_class}\n决定日：${item.decision_date}\n申请日：${item.application_date}\n请求人：${item.re_applicant}\n专利权人：${item.re_patentee}\n依据法条：${item.legal_base}\n决定要点：${item.decision_revise}\n正文：\n${item.decision_text}`; 
+                            const blob = new Blob([content], {type: 'application/msword'});
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `${item.decision_num}-${item.name}.doc`;
+                            document.body.appendChild(a);
+                            a.click(); // 触发下载
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url); // 释放内存
+                        });
+                        const divtip = document.createElement('div');
+                        divtip.id = `tip-id-${index + 1}`;
+                        divtip.style.display = 'none';
+                        divtip.style.position = 'absolute';
+                        divtip.style.padding = '20px';
+                        divtip.style.top = '5%';
+                        divtip.style.left = '30%';
+                        divtip.style.width = '70%';
+                        divtip.style.height = '95%';
+                        divtip.style.fontSize = '12px';
+                        divtip.style.overflowY = 'auto';
+                        divtip.style.backgroundColor = '#f9f9f9';
+                        divtip.style.borderColor = '#808080;'
+                        var alltxt = `<span style='color:#808080'>决定号：</span>${result.decision_num}&nbsp<span style="padding:1px 5px;border-radius:5px;color:white;background-color:${result_color};">${result.decision_result}</span><br>
+                        <span style='color:#808080'>委内编号：</span>${result.re_code}<br>
+                        <span style='color:#808080'>专利名称：</span>${result.name}<br>
+                        <span style='color:#808080'>IPC分类号：</span>${result.ipc_class}<br>
+                        <span style='color:#808080'>申请号：</span>${result.app_num}<br>
+                        <span style='color:#808080'>决定日：</span>${result.decision_date}<br>
+                        <span style='color:#808080'>专利权人：</span>${result.re_patentee}<br>
+                        <span style='color:#808080'>请求人：</span>${result.re_applicant}<br>
+                        <span style='color:#808080'>法律依据：</span>${result.legal_base}<br>
+                        <span style='color:#808080'>决定要点：</span>${result.decision_revise}<br>
+                        <span style='color:#808080'>正文:</span>${result.decision_text}`.replace(/\n/g,'<br>').replace(/<br><br>/g,'<br>');
+                        for (var key in highlights) {
+                            alltxt = alltxt.replace(new RegExp(highlights[key], 'g'), `<span style="background-color:red;color:white">${highlights[key]}</span>`);
+                        }
+                        divtip.innerHTML = alltxt;
+                        resultsContainer.appendChild(divtip);
+
+                        const divin = document.getElementById(`result-id-${index + 1}`);
+                        
+                        divin.addEventListener('mouseover', function () {
+                            divtip.style.display = 'block';
+                        });
+                       
+                        const hideElements = () => {
+                            divtip.style.display = 'none';
+                        };
+                        //divin.addEventListener('mouseout', (e) => {
+                        //     if (!divtip.contains(e.relatedTarget)) {
+                        //         hideElements();
+                        //     }
+                        // });
+                        divtip.addEventListener('mouseout', (e) => {
+                            if (!divin.contains(e.relatedTarget)) {
+                                hideElements();
+                            }
+                        });
+                    });
+                }
+                submitBtn.textContent = '提 交';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                exportButton.disabled = false;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('results-container').innerHTML = '服务器连接失败，请重试';
+                submitBtn.textContent = '提 交';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+        
+        exportButton.addEventListener('click', function() {
+            if (!results) {
+                console.log('>> 无可导出的数据！');
+                return;
+            }
+            const content = results.results.map(item => {
+                return `审查结果：${item.decision_result}\n决定号：${item.decision_num}\n委内编号：${item.re_code}\n专利名称：${item.name}\n专利号：${item.app_num}\n分类号：${item.ipc_class}\n决定日：${item.decision_date}\n申请日：${item.application_date}\n请求人：${item.re_applicant}\n专利权人：${item.re_patentee}\n依据法条：${item.legal_base}\n决定要点：${item.decision_revise}\n正文：\n${item.decision_text}`; 
+            }).join('\f');
+
+            // 创建 Blob 并下载文件
+            const blob = new Blob([content], {type: 'application/msword'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ReexamData.doc';
+            document.body.appendChild(a);
+            a.click(); // 触发下载
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // 释放内存
+        });
+    </script>
+    
+</body>
+
+</html>

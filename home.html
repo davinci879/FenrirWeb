@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>专利智撰家</title>
+      <meta name="keywords" content="专利，撰写, 检索, 服务, 流程, 文献查找，工具，辅助">
+      <meta name="description" content="提供专业的专利撰写与检索服务，涵盖详细的专利申请流程指导和高效的专利文献查找方法。">
+      <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+      <link rel="stylesheet" href="static/all.css">  
+      <link rel="stylesheet" href="static/quill.css">
+      <style>
+        body {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      nav ul {
+        list-style-type: none;
+        display: flex;
+      }
+
+      nav ul li {
+        margin-left: 20px;
+        margin-top:15px;
+        position: relative;
+      }
+
+      nav ul li ,a {
+        text-decoration: none;
+        color: inherit;
+      }
+      li:hover,a:hover {
+        opacity: 0.4;
+      }
+      .logo-container {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .search-container {
+          text-align: center;
+        }
+
+      .search-container select {
+          padding: 5px;
+          margin-right: 5px;
+        }
+
+      .search-container input {
+          padding: 5px;
+          width: 400px;
+        }
+      .contact-info {
+          text-align: center;
+          margin: 20px;
+        }
+        footer {
+          background-color: #333;
+          color: white;
+          text-align: center;
+          padding: 15px;
+          margin-top: auto;
+        }
+        footer a {
+          color: white;
+          text-decoration: none;
+        }
+        footer a:hover {
+          color:#008cff;
+        }
+    </style>
+  </head>
+
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <ul>
+                <a href="/home" class="brand">
+                  专利智撰家
+                </a>
+                <li>
+                    <a href="/patent">专利检索</a>
+                </li>
+                <li>
+                    <a href="/reexam">复审无效</a>
+                </li>
+                <li>
+                    <a href="/write">辅助撰写</a>
+                </li>
+                <li>
+                    <a href="/analyze">专利分析</a>
+                </li>
+                <li>
+                    <a href="/eureka">EUREKA</a>
+                </li>
+                <li>
+                    <a href="/design">外观编辑</a>
+                </li>
+                <li>
+                  <a href="/register">注册</a>
+              </li>
+            </ul>
+        </nav>
+    </header>
+  <main>
+    <div class="logo-container">
+      <img src="static/logo.png" alt="logo">
+    </div>
+    <div class="search-container">
+      <select style="text-align:center;">
+        <option value="patent">专利</option>
+        <option value="reexam">复审无效</option>
+      </select>
+      <input type="text" placeholder="请输入检索内容">
+      <button class="button" id="searchButton">搜  索</button>
+    </div>
+    <div class="contact-info">
+      <p style="color:#ff5d5d">
+        <a href="https://qm.qq.com/q/rS78wrHgaW">QQ群: 259303941</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://qm.qq.com/q/22FKBv01GI">177710206</a>&nbsp;&nbsp;&nbsp;&nbsp;微信:fenrir9999
+        
+      </p>
+    </div>
+    
+    <div class="contact-info">
+      <p>
+        <span style="color:#c300ff">专利申请：&nbsp;</span>
+        <a href="https://cponline.cnipa.gov.cn/index">专利业务办理系统</a> |
+        <a href="https://ipdps.cnipa.gov.cn/">公共服务系统</a> |
+        <a href="https://www.bjippc.cn/">北京保护中心</a> |
+        <a href="https://ippc.sipa.sh.gov.cn">上海保护中心</a> |
+        <a href="https://www.gzippc.cn">广州保护中心</a> |
+        <a href="http://www.sziprs.org.cn">深圳保护中心</a> |
+        <a href="https://ggfw-dljg.cnipa.gov.cn/poam/txnqueryAgent.do">专利管理系统</a> 
+      </p>
+      <p>
+        <span style="color:#ff0000">AI工具：&nbsp;</span>
+        <a href="https://www.doubao.com/chat/">豆包AI</a> |
+        <a href="https://yuanbao.tencent.com/chat/">元宝AI</a> |
+        <a href="https://chat.deepseek.com/">DeepSeek</a> |
+        <a href="https://www.patizy.cn">专小犀</a> |
+        <a href="https://www.patstars.com">PatStars</a> |
+        <a href="http://47.116.194.135:8078/home">窍笔</a> |
+        <a href="https://www.shuitunip.cn">水豚AI</a> |
+        <a href="http://ipd.tsingchenip.com">InnoPatentDrafter</a> |
+        <a href="https://xiezuocat.com">秘塔写作猫</a> |
+        <a href="https://www.ijiaodui.com">AI校对</a> 
+      </p>
+      <p>
+        <span style="color:#017bb4">在线绘图：&nbsp;</span>
+        <a href="https://www.drawio.com/">DrawIO</a> |
+        <a href="https://polyhaven.com">Polyhaven</a> |
+        <a href="https://www.processon.com">ProcessOn</a> |
+        <a href="https://www.canva.cn/draw/">Canva</a> |
+        <a href="https://www.figma.com">Figma</a> |
+        <a href="https://app.leonardo.ai">LeonardoAI</a> |
+        <a href="https://www.tripo3d.ai/app/home">Tripo3D</a> |
+        <a href="https://www.thingiverse.com">Thingiverse</a> |
+        <a href="https://www.figdraw.com">绘科研</a> |
+        <a href="https://biorender.com/">BioRender</a> |
+        <a href="https://smart.servier.com">Servier</a> |
+        <a href="https://www.scichart.com/">SciChart</a> |
+        <a href="https://scidraw.io/">Scidraw</a> |
+        <a href="https://www.vidu.cn/">Vidu</a> |
+        <a href="https://cad.crowncad.com">云上设计</a> |
+        <a href="https://app.klingai.com/cn/">可灵AI</a> 
+      </p>
+      <p>
+        <span style="color:#ffbb00">官方数据库：&nbsp;</span>
+        <a href="https://pss-system.cponline.cnipa.gov.cn">PSS</a> |
+        <a href="https://d.cnipa.gov.cn/micro-portal/#/login">外观检索</a> |
+        <a href="https://worldwide.espacenet.com/patent">欧专局</a> | 
+        <a href="https://patentscope.wipo.int/search/en/search.jsf">国际局</a> |
+        <a href="https://www.dpma.de/">德国局</a> |
+        <a href="https://ppubs.uspto.gov/pubwebapp/static/pages/ppubsbasic.html">美国局</a> |
+        <a href="https://globaldossier.uspto.gov/home">GlobalDossier</a> |
+        <a href="https://ccd.fiveipoffices.org/CCD-2.2.1/">CCD</a> |
+        <a href="https://www.j-platpat.inpit.go.jp/">日本局</a> |
+        <a href="https://www.kipo.go.kr/ko/MainApp.do">韩国局</a> 
+      </p>
+      <p>
+        <span style="color:#6200ff">第三方数据库：&nbsp;</span>
+        <a href="https://app.patentcloud.com/index.html">PatentCloud</a> |
+        <a href="https://www.freepatentsonline.com">FreePatentsOnline</a> |
+        <a href="https://www.patentics.com">Patentics</a> |
+        <a href="https://www.patenthub.cn">PatentHub</a> |
+        <a href="https://www.iprdb.com">IPRDB</a> |
+        <a href="https://www.baiten.cn">佰腾</a> |
+        <a href="https://www.rainpat.com">润桐</a>
+      </p>
+      <p>
+        <span style="color:#33b400">药学工具：&nbsp;</span>
+        <a href="https://www.drugfuture.com/">DrugFuture</a> |
+        <a href="https://www.accessdata.fda.gov/scripts/cder/ob/index.cfm">FDA橙皮书</a> |
+        <a href="https://www.chemexper.com/">Chemexper</a> |
+        <a href="https://www.who.int/influenza/viruses/descriptions/anatomical-subdivision/en/">WHO</a> |
+        <a href="https://www.who.int/classifications/icd/en/">ICD</a> |
+        <a href="https://www.drugfuture.com/standard/">药品标准查询</a> |
+        <a href="https://rebase.neb.com/rebase/rebase.html">Rebase</a> |
+        <a href="https://www.ncbi.nlm.nih.gov/datasets/genome/">NCBIGenome</a> |
+        <a href="https://www.cas.org/content/">CAScontent</a> |
+        <a href="https://www.atcc.org/">ATCC</a>
+      </p>
+      <p>
+        <span style="color:#008cff">其他工具：&nbsp;</span>
+        <a href="https://www.nstl.gov.cn/NSTL/">国家科技图书文献中心</a> |
+        <a href="https://www.ccopyright.com.cn/">中国版权保护中心</a> |
+        <a href="https://www.jiumodiary.com/">鸠摩搜索</a> |
+        <a href="https://www.scihub.net.cn/">SciHub</a> |
+        <a href="https://www.sciencedirect.com">ScienceDirect</a> |
+        <a href="https://www.researchgate.net/">ResearchGate</a>
+      </p>
+      <a href="https://qm.qq.com/q/rS78wrHgaW"> >> 更多功能请加Q群下载客户端 << </a>
+    </div>
+  </main>
+
+  <footer>
+    <p>
+      <a href="#">关于我们</a> |
+      <a href="#">使用条款</a> | 
+      <a href="#">隐私政策</a>
+    </p>
+
+    <p>&copy; 2019-2025 专利智撰家 版权所有，并保留所有权利</p>
+  </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const searchButton = document.getElementById('searchButton');
+      searchButton.addEventListener('click', function () {
+        if (document.querySelector('select').value === 'patent') {
+          window.location.href = `/patent`;
+        } else {
+          window.location.href = `/reexam`;
+        }
+        
+      });
+    });
+    async function getIP() {
+            try {
+                const response = await fetch('https://ipinfo.io/json');
+                const ip_json = await response.json();
+                const ip = ip_json.ip;
+                const location = await fetch(`https://ipapi.co/${ip}/json/`);
+                const location_json = await location.json();
+                const queryString = `tool=home&ip=${ip}&location=${location_json.country_name} ${location_json.region} ${location_json.city}&agent=${navigator.userAgent}}`;
+                fetch(`/api/submit_ip?${queryString}`, {method: 'POST'});
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+            }
+		}
+		window.onload = getIP;
+  </script>
+</body>
+
+</html>

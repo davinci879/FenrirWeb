@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>专利智撰家 Q群 259303941 微信fenrir9999</title>
+        <meta name="keywords" content="专利，撰写, 检索, 服务, 流程, 文献查找，工具，辅助">
+        <meta name="description" content="提供专业的专利撰写与检索服务，涵盖详细的专利申请流程指导和高效的专利文献查找方法。">
+        <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="static/all.css">  
+        <link rel="stylesheet" href="static/quill.css">
+        <style>
+            * {
+            margin: 0;
+            padding:0;
+            box-sizing: border-box;
+            }
+            nav ul {
+            list-style-type: none;
+            display: flex;
+            }
+
+            nav ul li {
+            margin-left: 20px;
+            margin-top:15px;
+            position: relative;
+            }
+
+            nav ul li a {
+            text-decoration: none;
+            color: inherit;
+            }
+            table {
+            margin-left:5px;
+            width: 200px;
+            border-collapse: collapse;
+            font-size: 12px;
+            max-height: 80vh;
+            display: block;
+            overflow-y: auto;
+            }
+
+            th,
+            td {
+            border: 1px solid #ddd;
+            padding: 2px;
+            text-align: center;
+            height: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            }
+            th:nth-child(1),
+            td:nth-child(1) {
+                width: 5px;
+            }
+
+            th:nth-child(2),
+            td:nth-child(2) {
+                width: 19px;
+            }
+
+            th:nth-child(3),
+            td:nth-child(3) {
+                width: 5px;
+            }
+
+            th:nth-child(4),
+            td:nth-child(4) {
+                width: 5px;
+            }
+            thead {
+            display: table;
+            width: 99%;
+            }
+
+            thead th:nth-child(1) {
+            width: 5px;
+            }
+
+            thead th:nth-child(2) {
+            width: 19px;
+            }
+
+            thead th:nth-child(3) {
+            width: 5px;
+            }
+
+            thead th:nth-child(4) {
+            width: 5px;
+            }
+            tbody {
+            display: block;
+            max-height: 80vh;
+            overflow-y: auto;
+            }
+
+            tr {
+            display: table;
+            width: 99%;
+            table-layout: fixed;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="static/quill.js"></script>
+        <script src="static/umd.js"></script>
+        <header class="header">
+            <nav class="navbar">
+                <ul>
+                    <a href="/home" class="brand">
+                      专利智撰家
+                    </a>
+                    <li>
+                        <a href="/patent">专利检索</a>
+                    </li>
+                    <li>
+                        <a href="/reexam">复审无效</a>
+                    </li>
+                    <li>
+                        <a href="/write">辅助撰写</a>
+                    </li>
+                    <li>
+                        <a href="/analyze">专利分析</a>
+                    </li>
+                    <li>
+                        <a href="/eureka">EUREKA</a>
+                    </li>
+                    <li>
+                        <a href="/design">外观编辑</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+        <div>   
+            <div class="container">
+                <div class="left" style="width:200px">
+                    <div class="bookmark-container">
+                        <div class="bookmark active" data-target="tab1">专利撰写</div>
+                        <div class="bookmark" data-target="tab2">AI撰写</div>
+                        <div class="bookmark" data-target="tab3">标记校验</div>
+                    </div>
+                    <!-- 内容区域 -->
+                    <div class="content-container">
+                        <div class="tab-content active" id="tab1">
+                            <input placeholder="附图标记" id="markresult" style="border-radius:5px;height:25px;margin-top:5px;margin-bottom:5px;width:190px;border:none;color:white;background: linear-gradient(90deg, #727272 0%, #ffffff 100%);">
+                            <div>
+                                <select id="markcombobox">
+                                    <option value="option1">(NUM)</option>
+                                    <option value="option2">（NUM）</option>
+                                    <option value="option3">NUM</option>
+                                    <option value="option4">[NUM]</option>
+                                    <option value="option5">VOID</option>
+                                    <option value="option6">关闭</option>
+                                </select>
+                                <select id="sortcombobox">
+                                    <option value="option1">上下位</option>
+                                    <option value="option2">按顺序</option>
+                                </select>
+                                <button class="button" onclick="deletemarks()">去除标记</button>
+                                <button class="button" onclick="replaceText()">批量替换</button>
+                            </div>
+                            <textarea id="text_mark" placeholder="附图标记&#10;失去焦点后自动排序" style="width:190px">1 电机减速机组件&#10;11 蜗杆联轴器&#10;12 线束组件&#10;2 传动组件&#10;21 导向管&#10;22 丝杆螺母组件&#10;221 丝杠</textarea>
+                        </div>
+                        
+                        <div class="tab-content" id="tab2">
+                            
+                            <button class="button" id="expand-btn" style="margin-left:10px;">AI扩写</button>
+                            <button class="button" id="decorate-btn">AI润色</button>
+                            <select id="writeSelect" style="width:180px;margin-left:7px;">
+                                <option value="background">背景技术</option>
+                                <option value="benefit">有益效果</option>
+                                <option value="abedo">具体实施例</option>
+                                <option value="claim">权利要求书</option>
+                                <option value="description">说明书</option>
+                                <option value="reexam_request">复审请求书</option>
+                                <option value="reexam_valid">无效宣告请求</option>
+                            </select>
+                            <button id="write-btn" class="button" style="background: rgb(233, 99, 39);color:white;font-size:14px;margin-right:5px;margin-left:10px;margin-top:5px;margin-bottom:10px;">开始撰写</button>
+                            <button class="button" style="background: #0077ff;color:white;font-size:14px;margin-left:5px;margin-top:5px;margin-bottom:10px;" onclick="textclear()">清空要素</button>
+                            <span style="color:gray;margin-top:20px;margin-left:10px">eg：</span>
+                            <span style="margin:10px;margin-top:20px;cursor:pointer;color:gray" onclick="fillQuestion_1()">机械键盘</span>
+                            <span style="margin:10px;margin-top:20px;cursor:pointer;color:gray" onclick="fillQuestion_2()">夜灯</span>
+                            <input id="title" placeholder="主题名称" style="margin-left:5px">
+                            <input id="techfield" placeholder="技术领域" style="margin-left:5px">
+                            <input id="problem" placeholder="技术问题" style="margin-left:5px">
+                            <input id="benifit" placeholder="技术效果" style="margin-left:5px">
+                            <input id="emboding" placeholder="具体实施方式" style="margin-left:5px">
+                            <input id="character" placeholder="技术特征" style="margin-left:5px">
+                            <textarea id="claim" placeholder="权利要求书" style="height:38vh;margin-left:5px;margin-right:0px"></textarea>
+                        </div>
+                        <div class="tab-content" id="tab3">
+                            <button id="check-btn" class="button" style="background: rgb(233, 99, 39); color:white;font-size:14px;margin-top:5px;width:190px;">校验文档</button>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>标号</th>
+                                        <th>名称</th>
+                                        <th>号数</th>
+                                        <th>名数</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- <textarea id="checkResult" placeholder="校验结果" style="scrollbar-width:thin;font-size:14px;width:190px;height:20vh;"></textarea> -->
+                        </div>
+                    </div>
+
+                </div>
+                <div class="right">
+                    <div id="editor"></div>
+                </div>
+            </div>
+        </div>
+        <div class="chat-container" id="chatContainer">
+            <div class="messages" id="messages"></div>
+            <div class="input-container">
+                <!-- <input type="password" id="api-key-input" value="sk-21fabdeba34d4b07974195092422c30f"  placeholder="DeepSeek密钥"> -->
+                <input type="text" id="user-input" style="height:30px;" placeholder="给 DeepSeek 发送消息">
+                <button id="send-btn">发 送</button>
+            </div>
+        </div>
+    <script>
+        function fillQuestion_1() {
+            document.getElementById("title").value = '机械键盘';
+            document.getElementById("techfield").value = '电脑外设';
+            document.getElementById("problem").value = '噪音 成本 外形';
+            document.getElementById("benifit").value = '噪音 成本 外形';
+            document.getElementById("emboding").value = '噪音 成本 外形';
+            document.getElementById("character").value = '底座 键帽 键轴 LED 外壳';
+            document.getElementById("claim").value = '';
+        }
+        function fillQuestion_2() {
+            document.getElementById("title").value = '夜灯';
+            document.getElementById("techfield").value = '照明装置';
+            document.getElementById("problem").value = '能耗 成本 外形 使用不便';
+            document.getElementById("benifit").value = '能耗低 续航 成本低 充电快 外形美观 使用方便';
+            document.getElementById("emboding").value = '磁吸 角度可调 续航时间长 充电效率';
+            document.getElementById("character").value = '底座 LED 外壳 磁吸 电池';
+            document.getElementById("claim").value = '';
+        }
+        function countElements() {
+            const rightText = quill.getText();
+            const leftText = document.getElementById('text_mark').value;
+            const lines = leftText.split('\n');
+            const tableBody = document.getElementById('tableBody');
+            
+            tableBody.innerHTML = '';
+
+            lines.forEach(line => {
+                const [label, name] = line.trim().split(' ');
+                const labelRegex = new RegExp(`${name}${label}|${name}\\(${label}\\)|${name}（${label}）`, 'g');
+                const nameRegex = new RegExp(name, 'g');
+                const labelCount = (rightText.match(labelRegex) || []).length;
+                const nameCount = (rightText.match(nameRegex) || []).length;
+
+                const row = tableBody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                const cell4 = row.insertCell(3);
+
+                cell1.textContent = label;
+                cell1.title = label;
+                cell2.textContent = name;
+                cell2.title = name;
+                cell3.textContent = labelCount;
+                cell3.title = labelCount;
+                cell4.textContent = nameCount;
+                cell4.title = nameCount;
+
+                if (labelCount === nameCount) {
+                    row.style.backgroundColor = '#77b67a';
+                } else {
+                    row.style.backgroundColor = '#ff7373';
+                }
+            });
+        }
+        function goToPage(page) {
+            window.location.href = '/' + page;
+        }
+
+        const writeSelect = document.getElementById('writeSelect');
+        const bookmarks = document.querySelectorAll('.bookmark');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        bookmarks.forEach(bookmark => {
+            bookmark.addEventListener('click', () => {
+            // 移除所有书签的激活状态
+            bookmarks.forEach(b => b.classList.remove('active'));
+            // 移除所有内容的激活状态
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // 添加当前书签的激活状态
+            bookmark.classList.add('active');
+            // 获取目标内容的 ID
+            const targetId = bookmark.getAttribute('data-target');
+            // 添加目标内容的激活状态
+            document.getElementById(targetId).classList.add('active');
+            });
+        });
+    </script>
+	<script>
+		async function getIP() {
+            try {
+                const response = await fetch('https://ipinfo.io/json');
+                const ip_json = await response.json();
+                const ip = ip_json.ip;
+                const location = await fetch(`https://ipapi.co/${ip}/json/`);
+                const location_json = await location.json();
+                const queryString = `tool=write&ip=${ip}&location=${location_json.country_name} ${location_json.region} ${location_json.city}&agent=${navigator.userAgent}}`;
+                fetch(`/api/submit_ip?${queryString}`, {method: 'POST'});
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+            }
+		}
+		window.onload = getIP;
+	</script>
+    <script>
+        // check ai
+        const chatContainer = document.getElementById('chatContainer');
+        const messagesDiv = document.getElementById('messages');
+        const writeBtn = document.getElementById('write-btn');
+        const checkBtn = document.getElementById('check-btn');
+        const sendBtn = document.getElementById('send-btn');
+        const userInput = document.getElementById('user-input');
+        
+        // 控制窗口展开/折叠
+        function toggleChat(expand) {
+            isExpanded = expand;
+            chatContainer.classList.toggle('expanded', expand);
+        }
+        // 添加消息
+        function addMessage(content, isUser = false) {
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            div.textContent = content;
+            messagesDiv.appendChild(div);
+            // 自动滚动到底部
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            // 延迟显示动画
+            setTimeout(() => div.classList.add('visible'), 50);
+        }
+        
+        // 显示正在输入状态
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            return typingDiv;
+        }
+        async function getAIResponse(writeType,prompt) {
+            addMessage(prompt, true);
+            const typing = showTyping();            
+            try {
+                const response = await fetch(`/api/doubao?type=${writeType}&prompt=${prompt}`, {method: 'POST'});
+                var data = await response.json();
+                
+                messagesDiv.removeChild(typing);
+                const regex = /[#* ]/g;
+                data = data['reply'].replace(regex, '')
+                data = data.replace(/\n{2,}/g, '\n')
+                addMessage(data);
+                const text = '\n'+ data +'\n'
+                if (text) {
+                    return text;
+                }
+                return `API错误`;
+            } catch (error) {
+                console.error('请求失败:', error);
+                messagesDiv.removeChild(typing);
+                return "网络连接异常，请稍后重试";
+            }
+        }
+        sendBtn.addEventListener('click', async () => {
+            var prompt = userInput.value.trim();
+           
+            if (!prompt) return;
+            if (!isExpanded) toggleChat(true);
+            userInput.value = '';
+            var response = await getAIResponse('chat', prompt);
+            }
+        );
+        checkBtn.addEventListener('click', async () => {
+            var prompt = quill.getText().trim();
+            const textResult = document.getElementById('checkResult');
+            if (!prompt) return;
+            countElements()
+           
+            }
+        );
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendBtn.click();
+        });
+        chatContainer.addEventListener('mouseenter', () => {
+            clearTimeout(hoverTimeout);
+            if (messagesDiv.children.length > 0) toggleChat(true);
+        });
+        chatContainer.addEventListener('mouseleave', () => {
+            if (messagesDiv.children.length > 0) {
+                hoverTimeout = setTimeout(() => toggleChat(false), 100);
+            }
+        });
+        
+        writeBtn.addEventListener('click', async () => {
+            var prompt = userInput.value.trim();
+            const title = document.getElementById('title').value.trim();
+            const techfield = document.getElementById('techfield').value.trim();
+            const problem = document.getElementById('problem').value.trim();
+            const benifit = document.getElementById('benifit').value.trim();
+            const emboding = document.getElementById('emboding').value.trim();
+            const character = document.getElementById('character').value.trim();
+            const claim = document.getElementById('claim').value.trim();
+
+            if (title){
+                if (!title) {
+                    alert('请先输入标题');
+                    return;
+                }
+                else if (!techfield) {
+                    alert('请先输入技术领域');
+                    return;
+                }
+                else if (!problem) {
+                    alert('请先输入问题');
+                    return;
+                }
+                else if (!benifit) {
+                    alert('请先输入技术效果');
+                    return;
+                }
+                else if (!emboding) {
+                    alert('请先输入具体实施方式');
+                    return;
+                }
+                var prompt = `专利名称：${title}\n>>技术领域：${techfield}\n>>技术问题：${problem}\n>>技术效果：${benifit}\n>>具体实施方式：${emboding}\n>>技术特征：${character}\n>>权利要求：${claim}`;
+            }
+            if (!prompt) return;
+            const writeType = writeSelect.value
+
+            writeBtn.textContent = '';
+            writeBtn.classList.add('loading');
+            writeBtn.disabled = true;
+            quill.enable(false);
+            if (writeType === 'description') {
+                const write_array = ['techfield','background','summary','benefit','abedo']
+                quill.insertText(quill.getLength(),`${title}\n\n技术领域`)
+                for (let i = 0; i < write_array.length; i++) {
+                    const writeType = write_array[i]
+                    var text = await getAIResponse(writeType, prompt);
+                    text = text.replace('专利说明书', '').replace('背景技术', '').replace('发明内容', '').replace('专利说明书', '').replace('本发明的有益效果是：\n','').replace(/以下是.*?部分：\n/, '').replace(/\n\n/g, '\n');
+                    function insertTextGradually() {
+                        return new Promise((resolve) => {
+                            let index = 0;
+                            // 设置定时器，每隔 10 毫秒执行一次回调函数
+                            const intervalId = setInterval(() => {
+                                if (index < text.length) {
+                                    // 在 Quill 编辑器的末尾插入当前字符
+                                    quill.insertText(quill.getLength() - 1, text[index]);
+                                    index++;
+                                } else {
+                                    // 清除定时器
+                                    clearInterval(intervalId);
+                                    // 文本插入完成，解决 Promise
+                                    resolve();
+                                }
+                            }, 10);
+                        });
+                    }
+                    insertTextGradually().then(() => {
+                        if (i == 0){
+                            quill.insertText(quill.getLength(),'背景技术')
+                        }
+                        else if (i == 1){
+                            quill.insertText(quill.getLength(),'\n发明内容')
+                        }
+                        else if (i == 3){
+                            quill.insertText(quill.getLength(),'附图说明\n图1为本发明的主视结构示意图。\n图2为本发明的等轴侧视结构示意图。\n\n具体实施方式\n')
+                        }
+                    });
+                }
+            }else{
+                const text = await getAIResponse(writeType, prompt)
+                let index = 0;
+                const intervalId = setInterval(function () {
+                    if (index < text.length) {
+                        quill.insertText(quill.getLength()-1,text[index]);
+                        index++;
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                }, 10);
+            }
+            writeBtn.textContent = '开始撰写';
+            writeBtn.classList.remove('loading');
+            writeBtn.disabled = false;
+            quill.enable(true);
+        });
+        const quill = new Quill('#editor', {
+            modules: {
+                toolbar: [
+                    [{ 'font': [] }], [{ 'size': [] }],[{ 'header': [] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ 'color': [] }], [{ 'background': [] }],
+                    [{ 'direction': 'rtl' }],
+                    [{ 'indent': '-1' }, { 'indent': '+1' }],
+                    [{ 'align': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    ['link', 'image'],['clean']
+                ]
+            },
+            theme: 'snow',placeholder: '输入左侧相应的附图标记编号，按空格',
+        });
+        setInterval(async () => {
+            const content = quill.root.innerHTML;
+            await idbKeyval.set('autoSave', content);
+        }, 5000);
+        window.addEventListener('load', async () => {
+            const saved = await idbKeyval.get('autoSave');
+            if (saved) quill.root.innerHTML = saved;
+        });
+        quill.on('text-change', function() {
+            const range = quill.getSelection();
+            if (range) {
+                const cursorPosition = range.index;
+                const textBeforeCursor = quill.getText(0, cursorPosition);
+                const lastFiveChars = textBeforeCursor.substring(Math.max(0, textBeforeCursor.length - 5));
+                checkText(lastFiveChars);
+            }
+        });
+        const otherHighlightStyle = {
+            background: '#fa5a57',
+            color: '#fff',
+            borderRadius: '3px'
+        };
+        const rightHighlightStyle = {
+            background: '#0084ff',
+            color: '#fff',
+            borderRadius: '3px' 
+        };
+        document.getElementById('text_mark').addEventListener('blur', function () {
+            var figmarks_array = [];
+            var selectedIndex = document.getElementById("sortcombobox").selectedIndex;
+            var temp_array = document.getElementById("text_mark").value.split(/\n/g);
+            if (selectedIndex === 0) {
+                for (var mark1 of temp_array){
+                    if (mark1.indexOf(/[；;]/g) !== -1){
+                        var temp = mark1.split(/[；;]/g)
+                        for (var mark2 of temp){
+                            if ((mark2.split(/[、]/g)).length > 2){
+                                figmarks_array.push(mark2.split(/、/g));
+                            }
+                            else if ((mark2.split(/[，,]/g).length) > 2){
+                                figmarks_array.push(mark2.split(/[，,]/g));
+                            }
+                            else{
+                                figmarks_array.push(mark2.replace(/[、;；]/g, ''));
+                            }
+                        }
+                    }
+                    else{
+                        figmarks_array = figmarks_array.concat(mark1.split(/[、，,]/g));
+                    }
+                }
+            }
+            else if (selectedIndex === 1) {
+                for (var mark1 of temp_array){
+                    if (mark1.indexOf(/[；;]/g) !== -1){
+                        var temp = mark1.split(/[；;]/g)
+                        for (var mark2 of temp){
+                            if ((mark2.split(/[、]/g)).length > 2){
+                                figmarks_array.push(mark2.split(/、/g));
+                            }
+                            else if ((mark2.split(/[，,]/g).length) > 2){
+                                figmarks_array.push(mark2.split(/[，,]/g));
+                            }
+                            else{
+                                figmarks_array.push(mark2.replace(/[、;；]/g, ''));
+                            }
+                        }
+                    }
+                    else{
+                        figmarks_array = figmarks_array.concat(mark1.split(/[、，,]/g));
+                    }
+                }
+            }
+
+            var figmarks_array = figmarks_array.filter(item => item.trim()!== '');
+            var figmarks_array = figmarks_array.map(item => item.replace(/[；;。，]/g, ''));
+            var str = figmarks_array.join('\n');
+            document.getElementById("text_mark").value = str;
+            });
+        document.getElementById('text_mark').addEventListener('click', function(e) {
+            const textBefore = this.value.slice(0, this.selectionStart);
+            const lineNumber = textBefore.split('\n').length - 1;
+            const searchText = this.value.split('\n')[lineNumber].trim();
+            quill.formatText(0, quill.getLength(), 
+                    { 
+                        background: 'transparent',
+                        color: 'black'
+                    }
+                );
+            if (!searchText) return;
+            let originalText = quill.getText();
+            const num = searchText.split(' ')[0];
+            const mark = searchText.split(' ')[1];
+            // const escapedText = searchText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var text = mark
+            var regex = new RegExp(text, 'g');
+            let match;
+            while ((match = regex.exec(originalText)) !== null) {
+                quill.formatText(match.index, text.length, 
+                    { 
+                        background: otherHighlightStyle.background,
+                        color: otherHighlightStyle.color 
+                    }
+                );
+            }
+            var text = `${mark}\(${num}\)`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            var regex = new RegExp(text, 'g');
+            while ((match = regex.exec(originalText)) !== null) {
+                quill.formatText(match.index, text.length-2, 
+                    { 
+                        background: rightHighlightStyle.background,
+                        color: rightHighlightStyle.color 
+                    }
+                );
+            }
+            var text = `${mark}\（${num}\）`;
+            var regex = new RegExp(text, 'g');
+            while ((match = regex.exec(originalText)) !== null) {
+                quill.formatText(match.index, text.length-2, 
+                    { 
+                        background: rightHighlightStyle.background,
+                        color: rightHighlightStyle.color 
+                    }
+                );
+            }
+        });
+        // AI扩写 AI润色
+        const expandBtn = document.getElementById('expand-btn');
+        const decorateBtn = document.getElementById('decorate-btn');
+        let isExpanded = false;
+        let hoverTimeout;
+        expandBtn.addEventListener('click', async () => {
+            var selection = quill.getSelection();
+            if (!selection) {
+                alert('先选择要扩写的部分');
+                return
+            }
+            var start = selection.index;
+            var length = selection.length;
+            var selectText = quill.getText(start, length);
+            
+            
+            if (selectText){
+                expandBtn.textContent = '';
+                expandBtn.classList.add('loading');
+                expandBtn.disabled = true;
+                quill.disable();
+
+                var prompt = '根据以下内容扩写专利:\n\n' + selectText;
+                const text = await getAIResponse('expand',prompt) 
+
+                let index = 0;
+                const intervalId = setInterval(function () {
+                    if (index < text.length) {
+                        quill.insertText(start + length + index - 1,text[index]);
+                        index++;
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                }, 20);
+                
+                expandBtn.textContent = 'AI扩写';
+                expandBtn.classList.remove('loading');
+                expandBtn.disabled = false;
+                quill.enable();
+            }
+        });
+        decorateBtn.addEventListener('click', async () => {
+            var selection = quill.getSelection();
+            if (!selection) {
+                alert('先选择要润色的部分');
+                return
+            }
+            var start = selection.index;
+            var length = selection.length;
+            var selectText = quill.getText(start, length);
+
+            
+            if (selectText){
+                decorateBtn.textContent = '';
+                decorateBtn.classList.add('loading');
+                decorateBtn.disabled = true;
+                quill.disable();
+
+                var prompt = '请用更专业、准确、高级的词汇润色以下内容：\n\n' + selectText;
+
+                const text = await getAIResponse('decorate',prompt);
+                let index = 0;
+                const intervalId = setInterval(function () {
+                    if (index < text.length) {
+                        quill.insertText(start + length + index - 1,text[index]);
+                        index++;
+                    } else {
+                        clearInterval(intervalId);
+                    }
+                }, 20);
+                
+                decorateBtn.textContent = 'AI润色';
+                decorateBtn.classList.remove('loading');
+                decorateBtn.disabled = false;
+                quill.enable();
+            }
+            
+        });
+        quill.keyboard.addBinding({ key: ' ' }, function (range, context) {
+            quill.formatText(0, quill.getLength(), 
+                { 
+                background: 'transparent',
+                color: 'black'
+                }
+            );
+            // 获取当前光标位置
+            const cursorPosition = range.index;
+            // 获取编辑器的内容
+            const content = quill.getText();
+            // 获取光标前一个字符
+            const previousChar = content[cursorPosition - 1];
+
+            const allword = document.getElementById('markresult').value;
+            const markindex = document.getElementById('markcombobox').selectedIndex;
+            if (!allword) {
+                quill.insertText(cursorPosition, ' ');
+                return;
+            };
+            if (markindex === 5){
+                quill.insertText(cursorPosition, ' ');
+                return
+            }
+            var num = allword.split(' ')[0];
+            var word = allword.split(' ')[1];
+            if (markindex === 0){
+                var wordshow = `${word}(${num})`;
+            }
+            else if (markindex === 1){
+                var wordshow = `${word}（${num}）`;
+            }
+            else if (markindex === 2){
+                var wordshow = `${word}${num}`;
+            }
+            else if (markindex === 3){
+                var wordshow = `${word}[${num}]`;
+            }
+            else if (markindex === 4){
+                var wordshow = `${word}`;
+            }
+            
+            var num_length = num.length
+            if (cursorPosition >= num_length) {
+                quill.deleteText(cursorPosition - num_length, num_length);
+                quill.insertText(cursorPosition - num_length, wordshow);
+                return 
+            }
+        });
+        const fileHandler = {
+            async openFile() {
+                const file = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'Word Documents',
+                        accept: {'text/html': ['.html']}
+                    }]
+                });
+                const content = await file[0].getFile().text();
+                quill.root.innerHTML = content;
+            },
+    
+            async saveFile() {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: 'document.html',
+                    types: [{
+                        description: 'HTML Document',
+                        accept: {'text/html': ['.html']}
+                    }]
+                });
+                const writable = await handle.createWritable();
+                await writable.write(quill.root.innerHTML);
+                await writable.close();
+            }
+        };
+        
+        function replaceText() {
+            var selectedIndex = document.getElementById("markcombobox").selectedIndex;
+            var text1 = document.getElementById("text_mark").value;
+            var text2 = quill.getText();
+            var mark_array =  text1.split(/\n/g);
+            if (!text1) {
+                return
+            }
+            // 测试字符串
+            if (selectedIndex === 0) {
+                for (var element of mark_array) {
+                    var mark_num = element.split(' ')[0];
+                    var mark_txt = element.split(' ')[1];
+                    if (!mark_num || !mark_txt) {
+                    alert('请检查标记格式，eg：\n1 第一组件\n2 第二组件');
+                    return;
+                    }
+                    const regex = new RegExp(mark_txt, 'g');
+                    text2 = text2.replace(regex, mark_txt+'('+mark_num+')');
+                }
+            }
+            else if (selectedIndex === 1) {
+                for (var element of mark_array) {
+                var mark_num = element.split(' ')[0];
+                var mark_txt = element.split(' ')[1];
+                if (!mark_num || !mark_txt) {
+                    alert('请检查标记格式，eg：\n1 第一组件\n2 第二组件');
+                    return;
+                    }
+                const regex = new RegExp(mark_txt, 'g');
+                text2 = text2.replace(regex, mark_txt+'（'+mark_num+'）');
+                }
+            }
+            else if (selectedIndex === 2) {
+                for (var element of mark_array) {
+                var mark_num = element.split(' ')[0];
+                var mark_txt = element.split(' ')[1];
+                if (!mark_num || !mark_txt) {
+                    alert('请检查标记格式，eg：\n1 第一组件\n2 第二组件');
+                    return;
+                    }
+                const regex = new RegExp(mark_txt, 'g');
+                text2 = text2.replace(regex,mark_txt+mark_num);
+                }
+            }
+            else if (selectedIndex === 3) {
+                for (var element of mark_array) {
+                var mark_num = element.split(' ')[0];
+                var mark_txt = element.split(' ')[1];
+                if (!mark_num || !mark_txt) {
+                    alert('请检查标记格式，eg：\n1 第一组件\n2 第二组件');
+                    return;
+                    }
+                const regex = new RegExp(mark_txt, 'g');
+                text2 = text2.replace(regex,mark_txt+'['+mark_num+']');
+                }
+            }
+            quill.setText(text2);
+        }
+        function deletemarks() {
+            var text = quill.getText();
+            text = text.replace(/\(.*?\)|（.*?）|【.*?】|\[.*?\]|\d+/g,'');
+            quill.setText(text);
+        }
+        function textclear(){
+            document.getElementById('title').value = '';
+            document.getElementById('techfield').value = '';
+            document.getElementById('problem').value = '';
+            document.getElementById('benifit').value = '';
+            document.getElementById('emboding').value = '';
+            document.getElementById('character').value = '';
+            document.getElementById('claim').value = '';
+        }
+    </script>
+    <script>
+        function checkText(inputValue) {
+            // 获取页面元素
+            const listTextarea = document.getElementById('text_mark');
+            const resultTextarea = document.getElementById('markresult');
+            resultTextarea.value = '';
+            resultTextarea.style = 'border-radius:5px;height:25px;margin-top:5px;margin-bottom:5px;width:190px;border:none;color:white;background: linear-gradient(90deg, #727272 0%, #ffffff 100%);';
+            if (!inputValue) return;
+            const regex = /^[0-9a-z]$/i; 
+            
+            const lines = listTextarea.value.split(/\n/g);
+            for (let i = 5; i >= 1; i--) {
+                var inputChars = inputValue.slice(-i);
+                // 遍历所有组件行
+                for (const line of lines) {
+                    const cleanedLine = line.trim();
+                    if (!cleanedLine) continue; 
+                    const num = line.split(' ')[0];
+                    if (num === inputChars) {
+                        resultTextarea.value = line; 
+                        resultTextarea.style = 'border-radius:5px;height:25px;margin-top:5px;margin-bottom:5px;width:190px;border:none;color:white;background:linear-gradient(90deg, rgb(233,99,39) 0%, #ffffff 100%);';
+                        return;
+                    }
+                }
+            }
+        }
+    </script>
+    </body>
+</html>

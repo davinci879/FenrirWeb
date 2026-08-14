@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>专利智撰家 EUREKA AI释放创新潜力</title>
+    <meta name="keywords" content="专利，撰写, 检索, 服务, 流程, 文献查找，工具，辅助">
+    <meta name="description" content="提供专业的专利撰写与检索服务，涵盖详细的专利申请流程指导和高效的专利文献查找方法。">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="static/all.css">
+    <style>
+        * {
+            margin: 0;
+            padding:0;
+            box-sizing: border-box;
+            }
+            nav ul {
+            list-style-type: none;
+            display: flex;
+            }
+
+            nav ul li {
+            margin-left: 20px;
+            margin-top:15px;
+            position: relative;
+            }
+
+            nav ul li a {
+            text-decoration: none;
+            color: inherit;
+            }
+        #left {
+            width: 75%;
+            display: flex inline-block;
+            flex-direction: column;
+            border: none;
+            background-color: rgb(250,251,252);
+        }
+        #right {
+            width: 24%;
+            min-height:150%;
+            border: 1px gray solid;
+            display: flex;
+            border-radius: 5px;
+            flex-direction: column;
+            display:flex;
+        }
+        .draggable {
+            opacity: 0.8;
+        }
+
+        .right-item {
+            position: relative;
+            padding:5px;
+            margin:5px;
+            margin-top:1px;
+            margin-bottom: 0px;
+            color: #fff;
+            background: #77b67a;
+            border-radius: 5px;
+            font-size:12px;
+            cursor:pointer;
+        }
+        .right-item:hover {
+            opacity: 0.5;
+        }
+
+        .close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        .processright {
+            width:100%;
+            font-size:12px;
+            margin-bottom: 2px;
+            padding:5px;
+            border-radius: 10px;
+            color: #6c757d;
+            /* border: #66aeff solid 1px; */
+        }
+
+        .mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 100;
+        }
+        .popup-right {
+            position: fixed;
+            top: 0;
+            right: -600px;
+            width: 560px;
+            height: 100%;
+            background: white;
+            z-index: 101;
+            transition: right 0.3s ease;
+            padding-left:5px;
+            padding-right:15px;
+            padding-top: 5px;
+            padding-bottom: 20px;
+            overflow: auto;
+            font-size:13px;
+            border:gray solid 1px;
+        }
+        #search-result{
+            line-height:2.0em;
+        }
+        .popup-right.active {
+            right: 0;
+        }
+        .case {
+            cursor: pointer;
+        }
+        #chat-result {
+            overflow: auto;
+            height: 70vh;
+            display: flex inline-block;
+            flex-direction: column;
+        }
+        .chat-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: #ffffff;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow: auto;
+            background: linear-gradient(0deg,#0077ff 0%,#fff 80%);
+        }
+        #status-div {
+            font-size: 13px;
+            color: #6c757d;
+            margin: 10px;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 5px;
+            margin-top: 5px;
+            border: gray solid 1px;
+            /* display:inline-block; */
+        }
+        .solution,
+        .ipc,
+        .cited,
+        .eureka_problem {
+            animation: slideInFromLeft 1.0s ease-out;
+            border-radius:10px;
+            padding: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            color:#ff7373;
+            margin-top:1px;
+            margin-bottom: 0px;
+            margin-left:10px;
+            
+        }
+        .solution:hover,
+        .ipc:hover,
+        .cited:hover,
+        .eureka_problem:hover{
+            opacity: 0.5;
+        }
+        .ipc {
+            color:#ff8c20;
+        }
+        .cited {
+            color:#7d3db9;
+        }
+        .eureka_problem{
+            color:#31b4a3;
+        }
+        .result-div,
+        .respprocess,
+        .process{
+            animation: slideInFromLeft 1.0s ease-out;
+            border-radius: 10px;
+            margin: 10px;
+            padding: 10px;
+            font-size: 13px;
+            display:inline-block flex;
+        }
+        .result-div {
+            border: none;
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+            margin-top: 1px;
+            margin-bottom: 0px;
+        }
+        .respprocess {
+            color: gray;
+            padding: 5px;
+            margin-left: 10px;
+            margin-top: 2px;
+            margin-bottom: 2px;
+            border-Radius: 5px;
+        }
+        .process{
+            color: white;
+            background: #0764e9;
+        }
+
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script src="static/umd.js"></script>
+    <header class="header">
+        <nav class="navbar">
+            <ul>
+                <a href="/home" class="brand">
+                  专利智撰家
+                </a>
+                <li>
+                    <a href="/patent">专利检索</a>
+                </li>
+                <li>
+                    <a href="/reexam">复审无效</a>
+                </li>
+                <li>
+                    <a href="/write">辅助撰写</a>
+                </li>
+                <li>
+                    <a href="/analyze">专利分析</a>
+                </li>
+                <li>
+                    <a href="/eureka">EUREKA</a>
+                </li>
+                <li>
+                    <a href="/design">外观编辑</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div style="display: flex;">
+        <div id="left">
+            <div id="status-div"><span>等待输入问题</span></div>
+            <div id="chat-result"></div>
+            <div class="chat-container">
+                <div style="margin-top: 15px; margin-left: 20px; font-size: 13px; color: #6c757d;">
+                    案例：
+                    <span class="case" onclick="fillQuestion(this)">如何设计模块化液冷服务器？</span>
+                    <span class="case" onclick="fillQuestion(this)">地月微波传输电能的技术难点？</span>
+                    <span class="case" onclick="fillQuestion(this)">超深井钻探的技术难点？</span>
+                    <span class="case" onclick="fillQuestion(this)">建造人造太阳面临的挑战？</span>
+                    <span class="case" onclick="fillQuestion(this)">如何实现人形机器人骑自行车？</span>
+                    <span class="case" onclick="fillQuestion(this)">考古挖掘的技术难点？</span>
+                </div>
+                <div class="messages" id="messages"></div>
+                <div class="input-container">
+                    <input type="text" id="user-input" style="height:30px;" placeholder="输入关于技术的问题，获取技术知识，技术信息和方案解答">
+                    <button id="send-btn">询 问</button>
+                </div>
+            </div>
+        </div>
+        <div id="right">
+            <div class="processright" >技术领域/对比文献/研发方向 ></div>
+            <div style="overflow:auto;display:flex">
+                <button class="button" id="more-btn" style="border-radius: 10px;width:30%;margin-left:5px;">查看更多</button>
+                <button id="submit-btn" style="width:55%;margin-left:5px;">确定研发方向</button>
+            </div>
+        </div>
+    </div>
+    <div class="mask"></div>
+    <div class="popup-right" id="popup-right">
+        <span>相关技术文献</span>
+    </div>
+    </div>
+    <script>
+        const sendBtn = document.getElementById('send-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const userInput = document.getElementById('user-input');
+        const resultsContainer = document.getElementById('chat-result');
+        const statusDiv = document.getElementById('status-div');
+        const leftDiv = document.getElementById('left');
+        const rightDiv = document.getElementById('right');
+        const moreBtn = document.getElementById('more-btn');
+        const bold_array = ['为实现上述目的','方案研发方向', '解决方案', '技术问题', 'IPC分类号',':','：','结构特征 >','配方 >','控制方法 >']
+        const popup = document.querySelector('.popup-right');
+        const mask = document.querySelector('.mask');
+        var temp_desc = ''
+        var prompt_title = ''
+        var ipc_response = ''
+
+        moreBtn.addEventListener('click', () => {
+            popup.classList.toggle('active');
+            mask.style.display = 'block';
+        });
+        mask.addEventListener('click', () => {
+            popup.classList.remove('active');
+            mask.style.display = 'none';
+        });
+        
+        function fillQuestion(element) {
+            const questionInput = document.getElementById("user-input");
+            questionInput.value = element.textContent;
+        }
+
+        function scrollElementIntoView(div) {
+            if ('scrollBehavior' in document.documentElement.style) {
+                div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                div.scrollIntoView({ block: 'start' });
+            }
+        }
+        sendBtn.addEventListener('click', async () => {
+            prompt_title = userInput.value.trim();
+            if (!prompt_title) return;
+            resultsContainer.textContent = '';
+            sendBtn.textContent = '';
+            sendBtn.classList.add('loading');
+            sendBtn.disabled = true;
+            userInput.value = '';
+            var cite_response = '';
+            // 步骤0
+            await appendrespDiv(`${prompt_title}(请根据需要，将橙色、绿色、紫色或红色的内容拖拽至右侧)`,'title');
+            statusDiv.innerHTML = '<span>确定撰写主题 → 分析技术领域...</span>';
+            // 步骤1
+            await appendDiv('正在分析可能涉及的技术领域以及技术问题>>','');
+            ipc_response = await getAIResponse('ipc', prompt_title);
+            await appendrespDiv(ipc_response.replace(/；/g,';').replace(/:|：/g,' >').replace(/,/g,'\n'),'ipc');
+            if (ipc_response.includes('网络连接异常，请稍后重试')) return;
+            
+            // var cite_response = await addCiteddocuments(ipc_response,'search');
+            // await appendrespDiv(cite_response.results.replace(/：/g,':\n').replace(/\)\:/g,')-').replace(/[\:|\,]+$/, ''),'cited');
+
+            // 步骤2
+            await appendDiv('正在分析可能的解决方案>>','');
+            statusDiv.innerHTML = '<span>确定撰写主题 → 分析技术领域 → 分析可能的解决方案...</span>';
+            var problem_response = await getAIResponse('eureka_problem', ipc_response);
+            await appendrespDiv(problem_response.replace(/:/g,':\n').replace(/针对技术问题/g,'\n针对技术问题'),'eureka_problem');
+            if (problem_response.includes('网络连接异常，请稍后重试')) return;
+
+            // 步骤3
+            await appendDiv('正在检索相关的专利和论文>> 以下文献名称、公开号并不准确，仅供参考','');
+            statusDiv.innerHTML = '<span>确定撰写主题 → 分析技术领域 → 分析可能的解决方案 → 检索现有技术...</span>';
+            var cite_response = await getAIResponse('cited', problem_response);
+            await appendrespDiv(cite_response.replace(/：/g,':\n').replace(/\)\:/g,')-').replace(/[\:|\,]+$/, ''),'cited');
+            if (cite_response.includes('网络连接异常，请稍后重试')) return;
+            // 步骤4
+            await appendDiv('正在分析可能的研发方向>>','');
+            statusDiv.innerHTML = '<span>确定撰写主题 → 分析技术领域 → 分析可能的解决方案 → 检索现有技术 → 分析可能的研发方向...</span>';
+            var solution_response = await getAIResponse('solution', cite_response);
+            await appendrespDiv(solution_response.replace(/\:/g,':\n'),'solution');
+            if (solution_response.includes('网络连接异常，请稍后重试')) return;
+            await appendDiv('请将指定的研发方向拖拽到右侧，并点击确定研发方向','select-direction');
+            statusDiv.innerHTML = '<span>确定撰写主题 → 分析技术领域 → 分析可能的解决方案 → 检索现有技术 → 分析可能的研发方向 → 等待确定研发方向...</span>';
+            sendBtn.textContent = '询 问';
+            sendBtn.classList.remove('loading');
+            sendBtn.disabled = false;
+        });
+        submitBtn.addEventListener('click', async () => {
+            const rightItems = rightDiv.querySelectorAll('.right-item');
+            const names = [];
+            rightItems.forEach(item => {
+                names.push(item.textContent.replace('×', '').trim());
+            });
+            var solution_response = '研发方向：['+ names.join(', ') +']';
+            if (!names.join(', ')) {
+                alert('请将相应的‘研发方向’拖拽至右侧');
+                return
+            };
+
+            submitBtn.textContent = '';
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            // 步骤5
+            document.getElementById('select-direction').remove();
+            await appendDiv('正在生成技术方案>>  耗时约60s，请耐心等待','');
+            statusDiv.innerHTML = '<span>确定撰写主题 → 分析技术领域 → 分析可能的解决方案 → 检索现有技术 → 确定研发方向 → 正在生成技术方案...</span>';
+            try {
+                temp_desc = await addCiteddocuments(ipc_response,'');
+            } catch (error) {
+                temp_desc = ''
+                console.error(error);
+            }
+            var fmnr = ''
+            var jtssfs = ''
+            var prompt = `以主题名称${prompt_title}<br>可参考的方案：${solution_response}<br>`
+            if (!temp_desc){
+                fmnr = '';
+                jtssfs = '';
+            }else{
+                if (temp_desc.includes('具体实施方式')){
+                    fmnr = temp_desc.split('具体实施方式')[0]
+                    jtssfs = temp_desc.split('具体实施方式')[1]
+                }else{
+                    fmnr = temp_desc.split('实施例')[0]
+                    jtssfs = temp_desc.split('实施例')[1]
+                }
+            }
+            while (true) {
+                var response = await getAIResponse('solution_out', prompt + '<br>按照该专利说明书格式撰写:' + fmnr);
+                if (response.includes('网络连接异常，请稍后重试')) {
+                    appendrespDiv('网络连接异常，正在重试','error');
+                }
+                else if (!response.includes('网络连接异常，请稍后重试')) {
+                    await appendDes(response,'output-div');
+                    break;
+                }
+            }
+            if (jtssfs){
+                await appendDiv('正在生成更多实施例>> ','');
+                // 具体实施方式
+                while (true) {
+                    var response = await getAIResponse('solution_out_embo', prompt + '<br>按照该专利说明书格式撰写，10个实施例以内：'+ jtssfs);
+                    if (response.includes('网络连接异常，请稍后重试') || response.includes('ErrorCode102：API调用失败')) {
+                        appendrespDiv('网络连接异常，正在重试','error');
+                    }
+                    else if (!response.includes('网络连接异常，请稍后重试')) {
+                        await appendDes(response,'output-embo-div');
+                        break;
+                    }
+                }
+            }
+            statusDiv.innerHTML = '<span>确定撰写主题 → 分析技术领域 → 分析可能的解决方案 → 检索现有技术 → 确定研发方向 → 生成技术方案</span>';
+            submitBtn.textContent = '确定研发方向';
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+
+            
+        });
+        function extractAndFormat(patentText) {
+            const titleRegex = /<专利名称>(.*)/;
+            const openNumberRegex = /<公开号>(.*)/;
+            const openDateRegex = /<公开日>(.*)/;
+            const ipcRegex = /<IPC>(.*)/;
+            const abstractRegex = /<摘要>([\s\S]*)$/;
+
+            const titleMatch = patentText.match(titleRegex);
+            const openNumberMatch = patentText.match(openNumberRegex);
+            const openDateMatch = patentText.match(openDateRegex);
+            const abstractMatch = patentText.match(abstractRegex);
+
+            const title = titleMatch ? titleMatch[1] : "";
+            const openNumber = openNumberMatch ? openNumberMatch[1] : "";
+            const openDate = openDateMatch ? openDateMatch[1] : "";
+            const abstract = abstractMatch ? abstractMatch[1].trim() : "";
+            const ipc = ipcRegex ? ipcRegex[1] : "";
+            return `<专利名称>${title}\n<公开号>${openNumber}\n<公开日>${openDate}\n<IPC>${ipc}\n<摘要>${abstract}\n`;
+        }
+        async function addCiteddocuments(ipc_response,type){
+            const response = await fetch(`/api/getdescription?prompt=${ipc_response}`,{method: 'POST'});
+            var desdata = await response.json()
+            if (type == 'search'){
+                var temp_desc = desdata['results'].replace(/\n/g,'<br>');
+                return extractAndFormat(temp_desc)
+            }
+            try{            
+                if (desdata) {
+                    var temp_desc = desdata['results'].replace(/\n/g,'<br>').split('======');
+                    var div = document.getElementById('popup-right')
+                    div.innerHTML = '<span style="font-weight: bold;">相关技术文献</span><div id="search-result">' + temp_desc + '</div>';
+                    return temp_desc[0].split('<说明书>')[1]
+                }
+            } catch (error) {
+                desdata = ''
+                console.log(error)
+            }
+            return ''
+        }
+        async function appendDes(response,divname){
+            var response_array = response.replace(/：/g,'：\n').split(/\n/g)
+            for (var i = 0; i < response_array.length; i++) {
+                await sleep(300);
+                var div = document.createElement('div');
+                div.className = 'result-div';
+                div.id = `${divname}-${i}`;
+                div.style.marginTop = '1px';
+                div.style.marginBottom = '1px';
+                const text = response_array[i]
+                for (var j = 0; j < bold_array.length; j++) {
+                    const temp = bold_array[j];
+                    if (text.includes(temp)) {
+                        div.style = 'font-weight: bold;';
+                    }
+                }
+                if (!text) continue;
+                resultsContainer.appendChild(div);
+                div.scrollIntoView({
+                    behavior: 'smooth', // 平滑滚动
+                    block: 'start' // 使元素顶部与视口顶部对齐
+                });
+                function insertTextGradually() {
+                    return new Promise((resolve) => {
+                        let index = 0;
+                        const outputDiv = document.getElementById(`${divname}-${i}`);
+                        const intervalId = setInterval(() => {
+                            if (index < text.length) {
+                                outputDiv.innerHTML += text[index];
+                                index++;
+                            } else {
+                                clearInterval(intervalId);
+                                resolve();
+                            }
+                        }, 10);
+                    });
+                }
+                insertTextGradually()
+            }
+        };
+        async function getAIResponse(writeType, prompt) {
+            try {
+                const response = await fetch(`/api/doubao?type=${writeType}&prompt=${prompt}`, { method: 'POST' });
+                var data = await response.json();
+                data = data['reply'].replace(/[#* ]/g, '').replace(/\n{2,}/g, '\n');
+                const text = '\n' + data + '\n'
+                if (text) {
+                    return text;
+                }
+                return `API错误`;
+            } catch (error) {
+                console.error('请求失败:', error);
+                sendBtn.textContent = '询 问';
+                sendBtn.classList.remove('loading');
+                sendBtn.disabled = false;
+                return "网络连接异常，请稍后重试";
+            }
+        }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+		async function getIP() {
+            try {
+                const response = await fetch('https://ipinfo.io/json');
+                const ip_json = await response.json();
+                const ip = ip_json.ip;
+                const location = await fetch(`https://ipapi.co/${ip}/json/`);
+                const location_json = await location.json();
+                const queryString = `tool=eureka&ip=${ip}&location=${location_json.country_name} ${location_json.region} ${location_json.city}&agent=${navigator.userAgent}}`;
+                fetch(`/api/submit_ip?${queryString}`, {method: 'POST'});
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+            }
+		}
+		window.onload = getIP;
+
+        
+        function appendDiv(txt,id){
+            var div = document.createElement('div');
+            if (id != ''){
+                div.id = id;
+            }
+            div.className = 'process';
+            div.style.display = 'inline-block'; 
+            div.innerHTML = txt;
+            resultsContainer.appendChild(div);
+            div.scrollIntoView({
+                behavior: 'smooth', // 平滑滚动
+                block: 'start' // 使元素顶部与视口顶部对齐
+            });
+        }
+        async function appendrespDiv(txt,classname){
+            txt = txt.replace(/```|json/g,'')
+            var txt_array = txt.replace(/],/g,'],\n').replace(/","/g,'",\n"').replace(/\n\n/g,'\n').replace(/,技术问题/g,',\n技术问题').replace(/[\"\'\[\]]/g,'').replace(/。,/g,'。\n,').replace(/；/g,'；\n').replace(/：/g,'：\n').replace(/,\{文献|\:文献|\:专利|\:论文|,文献|。文献/g,':\n文献').replace('IPC分类号 >','IPC分类号 >\n').replace(/技术问题 >/g,' 技术问题 >\n').replace('结构特征 >','结构特征 >\n').replace('配方 >','配方 >\n').split(/\n|<br>/g)
+            for (var i = 0; i < txt_array.length; i++) {
+                var div = document.createElement('div');
+                if (!txt_array[i] || txt_array[i].length <= 1) continue
+                if (classname == 'title') {
+                    div.className = 'solution';
+                    div.style.fontWeight = 'bold';
+                    div.style.color = 'gray'
+                } else if (classname == 'solution'){
+                    div.className = 'solution';
+                    div.draggable = true;
+                } else if (classname == 'ipc'){
+                    div.className = 'ipc';
+                    div.draggable = true;
+                } else if (classname == 'cited'){
+                    div.className = 'cited';
+                    div.draggable = true;
+                } else if (classname == 'eureka_problem'){
+                    div.className = 'eureka_problem';
+                    div.draggable = true;
+                } else {
+                    div.className = 'respprocess';
+                    div.draggable = false;
+                }
+                div.innerHTML = txt_array[i].replace('{','').replace('}','').replace(/^[,，:]+|[,，:]+$/g, '');
+                for (var j = 0; j < bold_array.length; j++) {
+                    const temp = bold_array[j];
+                    if (txt_array[i].includes(temp)) {
+                        div.style = 'font-weight: bold;';
+                    }
+                }
+                resultsContainer.appendChild(div);
+                div.scrollIntoView({
+                    behavior: 'smooth', // 平滑滚动
+                    block: 'start' // 使元素顶部与视口顶部对齐
+                });
+                await sleep(300);
+            }
+            await sleep(500);
+        }
+        
+
+        leftDiv.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', e.target.textContent);
+            e.dataTransfer.setData('type', e.target.className);
+            e.target.classList.add('draggable');
+        });
+
+        leftDiv.addEventListener('dragend', (e) => {
+            e.target.classList.remove('draggable');
+        });
+
+        rightDiv.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        rightDiv.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const text = e.dataTransfer.getData('text/plain');
+            const type = e.dataTransfer.getData('type');
+            
+            const newDiv = document.createElement('div');
+            newDiv.classList.add('right-item');
+            newDiv.textContent = text;
+            newDiv.dataset.type = type;
+            if (type == 'solution'){
+                newDiv.style.background = '#ff7373';
+            } else if (type == 'ipc'){
+                newDiv.style.background = '#ff8c20';
+            } else if (type == 'cited'){
+                newDiv.style.background = '#7d3db9';
+            } else if (type == 'eureka_problem'){
+                newDiv.style.background = '#31b4a3';
+            }
+            const closeBtn = document.createElement('span');
+            closeBtn.classList.add('close');
+            closeBtn.textContent = '×';
+            closeBtn.addEventListener('click', () => {
+                newDiv.remove();
+            });
+            newDiv.appendChild(closeBtn);
+            // 排序
+            const items = Array.from(rightDiv.children);
+            let insertIndex;
+
+            switch (type) {
+                case 'ipc':
+                    let ipcindex = items.reduce((ipcindex, item, index) => {
+                        return item.dataset.type === 'ipc' && item.id!== 'submit-btn' ? index : ipcindex;
+                    }, -1);
+                    insertIndex = ipcindex === -1 ? 1 : ipcindex + 1;
+                    break;
+                case 'eureka_problem':
+                    let lastIpcIndex = items.reduce((lastIndex, item, index) => {
+                        return item.dataset.type === 'ipc' && item.id!== 'submit-btn' ? index : lastIndex;
+                    }, -1);
+                    insertIndex = lastIpcIndex === -1 ? 1 : lastIpcIndex + 1;
+                    break;
+                case 'cited':
+                    // 找到最后一个 eureka_problem 类型元素的下一个位置
+                    let lastEurekaIndex = items.reduce((lastIndex, item, index) => {
+                        return item.dataset.type === 'eureka_problem' && item.id!== 'submit-btn' ? index : lastIndex;
+                    }, -1);
+                    if (lastEurekaIndex!== -1) {
+                        insertIndex = lastEurekaIndex + 1;
+                    } else {
+                        // 如果没有 eureka_problem 元素，就找最后一个 ipc 元素的下一个位置
+                        let lastIpcIndex = items.reduce((lastIndex, item, index) => {
+                            return item.dataset.type === 'ipc' && item.id!== 'submit-btn' ? index : lastIndex;
+                        }, -1);
+                        insertIndex = lastIpcIndex === -1 ? 1 : lastIpcIndex + 1;
+                    }
+                    break;
+                case 'solution':
+                    insertIndex = items.length - 1;
+                    break;
+                default:
+                    insertIndex = 1;
+            }
+            rightDiv.insertBefore(newDiv, rightDiv.children[insertIndex]);
+        });
+    </script>
+</body>
+
+</html>

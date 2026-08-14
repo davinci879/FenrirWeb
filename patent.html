@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专利智撰家 Q群 259303941 微信fenrir9999</title>
+    <meta name="keywords" content="专利，撰写, 检索, 服务, 流程, 文献查找，工具，辅助">
+    <meta name="description" content="提供专业的专利撰写与检索服务，涵盖详细的专利申请流程指导和高效的专利文献查找方法。">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="static/all.css">
+    <style>
+        * {
+            margin: 0;
+            padding:0;
+            box-sizing: border-box;
+            }
+            nav ul {
+            list-style-type: none;
+            display: flex;
+            }
+
+            nav ul li {
+            margin-left: 20px;
+            margin-top:15px;
+            position: relative;
+            }
+
+            nav ul li a {
+            text-decoration: none;
+            color: inherit;
+            }
+        .patent{
+            width: 150px;
+            height: 20px;
+            margin: 1px;
+            border-radius: 5px;
+            border: 1px solid #0099ff;
+            padding:1px;
+        }
+        #results-container {
+            margin-left: 10px;
+            height:80vh;
+            overflow-y: scroll;
+        }
+        #tooltip {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <ul>
+                <a href="/home" class="brand">
+                  专利智撰家
+                </a>
+                <li>
+                    <a href="/patent">专利检索</a>
+                </li>
+                <li>
+                    <a href="/reexam">复审无效</a>
+                </li>
+                <li>
+                    <a href="/write">辅助撰写</a>
+                </li>
+                <li>
+                    <a href="/analyze">专利分析</a>
+                </li>
+                <li>
+                    <a href="/eureka">EUREKA</a>
+                </li>
+                <li>
+                    <a href="/design">外观编辑</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div style="display: flex;font-size:12px;margin-left:12px;">>> 数据更新至 2025-04-15&nbsp;&nbsp;&nbsp;>>198603~202505(公开日)&nbsp;&nbsp;&nbsp;>> 收录专利数量15,077,109</div>
+    <form id="searchForm">
+        <div style="margin-left:10px;">
+            <div>
+                <input class="patent" type="text" id="name" placeholder="专利名称 eg:机械键盘">
+                <input class="patent" type="text" id="app_num" placeholder="申请号 eg:2023">
+                <input class="patent" type="text" id="ipc_class" placeholder="IPC分类号 eg:B60J">
+                <input class="patent" type="text" id="publication_num" placeholder="公开号 eg:117678887">
+                <input class="patent" type="text" id="publication_type" placeholder="公开类型 eg:A、B、C、U">
+                <input class="patent" type="text" id="agency" placeholder="代理机构/代理人">
+                <input class="patent" type="text" id="applicant" placeholder="申请人 eg:华为">
+                <input class="patent" type="text" id="inventor" placeholder="发明人">
+                <input class="patent" type="text" id="application_date" placeholder="申请日 eg:202407">
+                <input class="patent" type="text" id="publication_date" placeholder="公开日 eg:202407">
+                <!-- <input class="patent" type="text" id="cited_document" placeholder="引用文献 eg:CN117678887">
+                <input class="patent" type="text" id="related_document" placeholder="相关文献 eg:CN117678887"> -->
+                <input class="patent" type="text" id="abstract" placeholder="摘要">
+                <input class="patent" type="text" id="alltxt" placeholder="正文">
+                <div style="display: flex;">
+                    <input id="advanced-search" style="margin:5px;width:70%;border-radius:10px;box-shadow:None;height:30px;padding: 10px;" placeholder="请输入检索内容">
+                    <button id="submit-btn" style="margin:5px;width:85px;">提 交</button>
+                    <button id="export-btn" style="margin:5px;width:85px;" disabled>全部下载</button>
+                    <div id="result-count" style="margin-top:18px"></div>
+                </div>
+                <div id="tooltip">
+                    TI:专利名称<br>
+                    IPC:IPC分类号<br>
+                    AD:申请日<br>
+                    PD:公开日<br>
+                    PT:公开类型<br>
+                    AN:申请号<br>
+                    AP:申请人<br>
+                    IN:发明人<br>
+                    AG:代理机构/代理人<br>
+                    PN:公开号<br>
+                    AB:摘要<br>
+                    AT:全文<br>
+                    eg: TI=机械键盘 AND (IPC=B60J OR IPC=B60K) AND AT=按键
+                </div>
+            </div>
+        </div>
+    </form>
+        <div id="results-container"></div>
+    <script>
+        function homePage() {
+            window.location.href = '/home';
+        }
+    </script>
+      <script>
+        const input = document.getElementById('advanced-search');
+        const tooltip = document.getElementById('tooltip');
+    
+        input.addEventListener('mouseover', function () {
+          const rect = input.getBoundingClientRect();
+          tooltip.style.left = rect.right + 'px';
+          tooltip.style.top = rect.top + 'px';
+          tooltip.style.display = 'block';
+        });
+    
+        input.addEventListener('mouseout', function () {
+          tooltip.style.display = 'none';
+        });
+      </script>
+    <script>
+        const exportButton = document.getElementById('export-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        let results = [];
+        submitBtn.addEventListener('click', async () => {
+            const searchdata = {
+                    name: '',
+                    ipc_class: '',
+                    alltxt: '',
+                    application_date: '',
+                    publication_date: '',
+                    publication_num: '',
+                    publication_type: '',
+                    app_num: '',
+                    applicant: '',
+                    inventor: '',
+                    agency: '',
+                    abstract: ''
+                };
+            searchdata.name = document.getElementById('name').value.trim();
+            searchdata.app_num = document.getElementById('app_num').value.trim();
+            searchdata.ipc_class = document.getElementById('ipc_class').value.trim();
+            searchdata.publication_num = document.getElementById('publication_num').value.trim();
+            searchdata.publication_type = document.getElementById('publication_type').value.trim();
+            searchdata.agency = document.getElementById('agency').value.trim();
+            searchdata.applicant = document.getElementById('applicant').value.trim();
+            searchdata.inventor = document.getElementById('inventor').value.trim();
+            searchdata.application_date = document.getElementById('application_date').value.trim();
+            searchdata.publication_date = document.getElementById('publication_date').value.trim();
+            // searchdata.cited_document = document.getElementById('cited_document').value.trim();
+            // searchdata.related_document = document.getElementById('related_document').value.trim();
+            searchdata.abstract = document.getElementById('abstract').value.trim();
+            searchdata.alltxt = document.getElementById('alltxt').value.trim();
+            const advanced_search = document.getElementById('advanced-search').value.trim();
+            if (advanced_search){
+                const conditions = advanced_search.split(/\s*(?:and|AND)\s*/);
+                
+                // 遍历每个条件
+                conditions.forEach((condition) => {
+                    if (condition.includes('TI=')) {
+                        searchdata.name = condition.split('=')[1];
+                    } else if (condition.includes('IPC=')) {
+                        searchdata.ipc_class = condition.split('=')[1];
+                    } else if (condition.includes('AT=')) {
+                        searchdata.alltxt = condition.split('=')[1];
+                    } else if (condition.includes('AD=')) {
+                        searchdata.application_date = condition.split('=')[1];
+                    } else if (condition.includes('PD=')) {
+                        searchdata.publication_date = condition.split('=')[1];
+                    } else if (condition.includes('PN=')) {
+                        searchdata.publication_num = condition.split('=')[1];
+                    } else if (condition.includes('PT=')) {
+                        searchdata.publication_type = condition.split('=')[1];
+                    } else if (condition.includes('AN=')) {
+                        searchdata.app_num = condition.split('=')[1];
+                    } else if (condition.includes('AP=')) {
+                        searchdata.applicant = condition.split('=')[1];
+                    } else if (condition.includes('IN=')) {
+                        searchdata.inventor = condition.split('=')[1];
+                    } else if (condition.includes('AG=')) {
+                        searchdata.agency = condition.split('=')[1];
+                    } else if (condition.includes('AB=')) {
+                        searchdata.abstract = condition.split('=')[1];
+                    }
+                });
+            }
+            var highlights = [];
+            for (const key in searchdata) {
+                if (searchdata.hasOwnProperty(key)) {
+                    const value = searchdata[key];
+                    if (value.includes('or') || value.includes('and') || value.includes('OR') || value.includes('AND')){
+                        const parts = value.split(/\s+(?:or|and|OR|AND)\s+/);
+                        highlights.push(...parts);
+                    } else if (value) {
+                        highlights.push(value);
+                    }
+                }
+            }
+            const queryString = `name=${encodeURIComponent(searchdata.name)}&app_num=${encodeURIComponent(searchdata.app_num)}&ipc_class=${encodeURIComponent(searchdata.ipc_class)}&publication_num=${encodeURIComponent(searchdata.publication_num)}&publication_type=${encodeURIComponent(searchdata.publication_type)}&agency=${encodeURIComponent(searchdata.agency)}&applicant=${encodeURIComponent(searchdata.applicant)}&inventor=${encodeURIComponent(searchdata.inventor)}&application_date=${encodeURIComponent(searchdata.application_date)}&publication_date=${encodeURIComponent(searchdata.publication_date)}&abstract=${encodeURIComponent(searchdata.abstract)}&alltxt=${encodeURIComponent(searchdata.alltxt)}`;
+            // 使用 Fetch API 发送 GET 请求
+            try {
+                submitBtn.textContent = '';
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+                const startTime = Date.now();
+                const response = await fetch(`/searchpatent?${queryString}`, {method: 'POST'});
+                results = await response.json();
+                const endTime = Date.now();
+                const elapsedTime = (endTime - startTime) / 1000;
+                const resultsContainer = document.getElementById('results-container');
+                resultsContainer.innerHTML = '';
+                if (!results){
+                    const div = document.createElement('div');
+                    div.className ='result-div';
+                    div.style.border = '1px solid #0077ff';
+                    div.style.padding = '10px';
+                    div.style.margin = '10px';
+                    div.innerHTML = `服务器连接失败，请重试`; 
+                    resultsContainer.appendChild(div);
+                }
+                else if (results){
+                    const div = document.createElement('div');
+                    document.getElementById('result-count').innerHTML = '';
+                    div.innerHTML = `共检索到${results.count}条，耗时${elapsedTime.toFixed(2)}秒 <br>`;
+                    div.style.marginLeft = '10px';
+                    div.style.fontSize = '12px';
+                    document.getElementById('result-count').appendChild(div);
+                    results.results.forEach((result,index) => {
+                        const div = document.createElement('div');
+                        const address = result.applicant.split(' ')[2] + ' ' + result.applicant.split(' ')[1];
+                        const applicant = result.applicant.split(' ')[0];
+                        div.className ='result-div';
+                        div.style.border = '1px solid #0077ff';
+                        div.style.padding = '10px';
+                        div.style.margin = '10px';
+                        div.style.fontSize = '15px';
+                        div.style.height = '100px auto';
+                        div.innerHTML = `${index + 1}. <span style='color:#808080'>公开号：</span>${result.publication_num}<br>
+                        <span style='color:#808080'>专利名称：</span>${result.name}<br>
+                        <span style='color:#808080'>IPC分类号：</span>${result.ipc_class}<br>
+                        <span style='color:#808080'>申请号：</span>${result.app_num}<br>
+                        <span style='color:#808080'>申请日：</span>${result.application_date}<br>
+                        <span style='color:#808080'>公开日/授权公告日：</span>${result.publication_date}<br>
+                        <span style='color:#808080'>发明人：</span>${result.inventor}<br>
+                        <span style='color:#808080'>第一申请人：</span>${applicant}<br>
+                        <span style='color:#808080'>地址：</span>${address}<br>
+                        <span style='color:#808080'>代理机构：</span>${result.agency}<br>
+                        <span style='color:#808080'>摘要:</span>${result.abstract}<br>
+                        <div style='display: flex;'>
+                        <div id=download-id-${index + 1}><span style='background-color:rgb(22,120,194);color:white;cursor:pointer;width:100px;height:30px;border:solid 1px #808080;border-radius:5px;text-align:center;line-height:30px;'>&nbsp&nbsp下载&nbsp&nbsp</span></div>&nbsp&nbsp
+                        <div><span style='color:rgb(22,120,194);cursor:pointer;width:100px;height:30px;border:solid 1px #808080;border-radius:5px;text-align:center;line-height:30px;'><a style='text-decoration: none;' href="https://worldwide.espacenet.com/patent/search?q=${result.publication_num}">&nbsp&nbspEspacenet&nbsp&nbsp</a></span></div>&nbsp&nbsp
+                        <div id=result-id-${index + 1}><span style='color:rgb(22,120,194);cursor:pointer;width:100px;height:30px;border:solid 1px #808080;border-radius:5px;text-align:center;line-height:30px;'>&nbsp&nbsp预览&nbsp&nbsp</span></div>
+                        </div>`;
+                        resultsContainer.appendChild(div);
+                        document.getElementById(`download-id-${index + 1}`).addEventListener('click', function() {
+                            const item = results.results[index];
+                            if (!item) {
+                                console.log('>> 无可导出的数据！');
+                                return;
+                            }
+                            const content = `公开号：${item.publication_num}\n专利名称：${item.name}\n专利号：${item.app_num}\n分类号：${item.ipc_class}\n申请日：${item.application_date}\n公开日：${item.publication_date}\n专利权人：${item.applicant}\n发明人：${item.inventor}\n代理机构：${item.agency}\n说明书全文：${item.alltxt}`; 
+                            const blob = new Blob([content], {type: 'application/msword'});
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `${item.publication_num}-${item.name}.doc`;
+                            document.body.appendChild(a);
+                            a.click(); // 触发下载
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url); // 释放内存
+                        });
+                        const divtip = document.createElement('div');
+                        divtip.id = `tip-id-${index + 1}`;
+                        divtip.style.display = 'none';
+                        divtip.style.position = 'absolute';
+                        divtip.style.padding = '20px';
+                        divtip.style.top = '5%';
+                        divtip.style.left = '30%';
+                        divtip.style.width = '70%';
+                        divtip.style.height = '95%';
+                        divtip.style.fontSize = '12px';
+                        divtip.style.overflowY = 'auto';
+                        divtip.style.backgroundColor = '#f9f9f9';
+                        divtip.style.borderColor = '#808080;'
+                        var alltxt = `<span style='color:#808080'>公开号：</span>${result.publication_num}<br>
+                        <span style='color:#808080'>专利名称：</span>${result.name}<br>
+                        <span style='color:#808080'>IPC分类号：</span>${result.ipc_class}<br>
+                        <span style='color:#808080'>申请号：</span>${result.app_num}<br>
+                        <span style='color:#808080'>申请日：</span>${result.application_date}<br>
+                        <span style='color:#808080'>公开日/授权公告日：</span>${result.publication_date}<br>
+                        <span style='color:#808080'>发明人：</span>${result.inventor}<br>
+                        <span style='color:#808080'>第一申请人：</span>${applicant}<br>
+                        <span style='color:#808080'>地址：</span>${address}<br>
+                        <span style='color:#808080'>代理机构：</span>${result.agency}<br>
+                        <span style='color:#808080'>摘要:</span>${result.abstract}<br>
+                        <span style='color:#808080'>说明书全文:</span>${result.alltxt}`.replace(/\n/g,'<br>').replace(/<br><br>/g,'<br>');
+                        for (var key in highlights) {
+                            alltxt = alltxt.replace(new RegExp(highlights[key], 'g'), `<span style="background-color:red;color:white">${highlights[key]}</span>`);
+                        }
+                        divtip.innerHTML = alltxt;
+                        resultsContainer.appendChild(divtip);
+
+                        const divin = document.getElementById(`result-id-${index + 1}`);
+                        
+                        divin.addEventListener('mouseover', function () {
+                            divtip.style.display = 'block';
+                        });
+                       
+                        const hideElements = () => {
+                            divtip.style.display = 'none';
+                        };
+                        // divin.addEventListener('mouseout', (e) => {
+                        //     if (!divtip.contains(e.relatedTarget)) {
+                        //         hideElements();
+                        //     }
+                        // });
+                        divtip.addEventListener('mouseout', (e) => {
+                            if (!divin.contains(e.relatedTarget)) {
+                                hideElements();
+                            }
+                        });
+                    });
+                }
+                submitBtn.textContent = '提 交';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                exportButton.disabled = false;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('results-container').innerHTML = '服务器连接失败，请重试';
+                submitBtn.textContent = '提 交';
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                exportButton.disabled = false;
+            }
+        });
+        
+        exportButton.addEventListener('click', function() {
+            if (!results) {
+                alert('No data to export!');
+                return;
+            }
+            const content = results.results.map(item => {
+                return `公开号：${item.publication_num}\n专利名称：${item.name}\n专利号：${item.app_num}\n分类号：${item.ipc_class}\n申请日：${item.application_date}\n公开日：${item.publication_date}\n专利权人：${item.applicant}\n发明人：${item.inventor}\n代理机构：${item.agency}\n说明书全文：${item.alltxt}`; 
+            }).join('\f'); 
+
+            // 创建 Blob 并下载文件
+            const blob = new Blob([content], {type: 'application/msword'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'PatentData.doc';
+            document.body.appendChild(a);
+            a.click(); // 触发下载
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // 释放内存
+        });
+    </script>
+    
+</body>
+
+</html>

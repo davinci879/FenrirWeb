@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专利智撰家 Q群 259303941 微信fenrir9999</title>
+    <meta name="keywords" content="专利，撰写, 检索, 服务, 流程, 文献查找，工具，辅助">
+    <meta name="description" content="提供专业的专利撰写与检索服务，涵盖详细的专利申请流程指导和高效的专利文献查找方法。">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="static/all.css">
+    <style>
+        * {
+            margin: 0;
+            padding:0;
+            box-sizing: border-box;
+            }
+            nav ul {
+            list-style-type: none;
+            display: flex;
+            }
+
+            nav ul li {
+            margin-left: 20px;
+            margin-top:15px;
+            position: relative;
+            }
+
+            nav ul li a {
+            text-decoration: none;
+            color: inherit;
+            }
+        .grid-container {
+            margin-left:50px;
+            margin-right:50px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+        }
+
+        .grid-item {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .grid-item.dragover {
+            background-color: #e0f7fa;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <ul>
+                <a href="/home" class="brand">
+                  专利智撰家
+                </a>
+                <li>
+                    <a href="/patent">专利检索</a>
+                </li>
+                <li>
+                    <a href="/reexam">复审无效</a>
+                </li>
+                <li>
+                    <a href="/write">辅助撰写</a>
+                </li>
+                <li>
+                    <a href="/analyze">专利分析</a>
+                </li>
+                <li>
+                    <a href="/eureka">EUREKA</a>
+                </li>
+                <li>
+                    <a href="/design">外观编辑</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="grid-container">
+        <div class="grid-item" id="trans-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'立体图')">
+            <span class="placeholder">立体图</span>
+        </div>
+        <div class="grid-item" id="top-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'俯视图')">
+            <span class="placeholder">俯视图</span>
+        </div>
+        <div class="grid-item" id="back-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'后视图')">
+            <span class="placeholder">后视图</span>
+        </div>
+        <div class="grid-item" id="left-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'左视图')">
+            <span class="placeholder">左视图</span>
+        </div>
+        <div class="grid-item" id="main-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'主视图')">
+            <span class="placeholder">主视图</span>
+        </div>
+        <div class="grid-item" id="right-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'右视图')">
+            <span class="placeholder">右视图</span>
+        </div>
+        <div class="grid-item" id="state1-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'状态I图')">
+            <span class="placeholder">状态I图</span>
+        </div>
+        <div class="grid-item" id="bottom-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'仰视图')">
+            <span class="placeholder">仰视图</span>
+        </div>
+        <div class="grid-item" id="state2-view" ondrop="handleDrop(event, this)" ondragover="handleDragOver(event)" ondblclick="clearImage(this,'状态II图')">
+            <span class="placeholder">状态II图</span>
+        </div>
+    </div>
+    <div style="display: flex;">
+        <button id="import-btn" class="button" style="margin:5px;margin-left:50px">一键导入</button>
+        <button id="adjust-btn" class="button" style="margin:5px;">调整尺寸</button>
+        <button id="output-btn" class="button" style="margin:5px;">导出</button>
+        <input type="file" id="folder-selector" style="display: none;" webkitdirectory directory multiple >
+    </div>
+    <script>
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.target.classList.add('dragover');
+        }
+        function clearImage(target,image_name) {
+            target.innerHTML = `<span class="placeholder">${image_name}</span>`;
+        }
+        function handleDrop(event, target) {
+            event.preventDefault();
+            event.target.classList.remove('dragover');
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const img = new Image();
+                        img.src = e.target.result;
+                        target.innerHTML = '';
+                        target.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        document.getElementById('adjust-btn').addEventListener('click', function () {
+            const mainViewImg = document.querySelector('#main-view img');
+            if (mainViewImg) {
+                const width = mainViewImg.offsetWidth;
+                const height = mainViewImg.offsetHeight;
+                const viewsToAdjust = ['back-view', 'left-view', 'right-view', 'top-view', 'bottom-view'];
+                viewsToAdjust.forEach(viewId => {
+                    const view = document.getElementById(viewId);
+                    const img = view.querySelector('img');
+                    if (img) {
+                        img.style.width = width + 'px';
+                        img.style.height = height + 'px';
+                    }
+                });
+            }
+        });
+    
+    </script>
+    <script>
+        const importButton = document.getElementById('import-btn');
+        const folderSelector = document.getElementById('folder-selector');
+
+        importButton.addEventListener('click', () => {
+            folderSelector.click();
+        });
+
+        folderSelector.addEventListener('change', () => {
+            const files = folderSelector.files;
+            const viewMapping = {
+                '01': 'main-view',
+                '02': 'back-view',
+                '03': 'left-view',
+                '04': 'right-view',
+                '05': 'top-view',
+                '06': 'bottom-view'
+            };
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileName = file.name.split('.')[0];
+                if (viewMapping[fileName]) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const img = new Image();
+                        img.src = event.target.result;
+                        const view = document.getElementById(viewMapping[fileName]);
+                        view.innerHTML = '';
+                        view.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

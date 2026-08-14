@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <title>客户端注册</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+                
+        .registration-container {
+            background-color: white;
+            /* padding: 2rem; */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            width: 100%;
+        }
+        
+
+        h2 {
+            color: #1a73e8;
+            text-align: center;
+            margin-bottom: 1.0rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #5f6368;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px #e8f0fe;
+        }
+       
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-left: 10px;
+            
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #51a5ff;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .login-link a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .register-box {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+            width: 400px;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 15px 25px rgba(40, 44, 52, 0.5);
+            background:white;
+            z-index: 2;
+        }
+        #particles-canvas {
+            background: linear-gradient(90deg, #2e90ff 0%, #ffffff 100%);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+    </style>
+    <style>
+        html, body {
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        body {
+            margin: 0;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .dg {
+            opacity: 0.9;
+        }
+
+        .dg .property-name {
+            overflow: visible;
+        }
+
+        .bigFont {
+            font-size: 150%;
+            color: #8C8C8C;
+        }
+
+        .cr.function.appBigFont {
+            font-size: 150%;
+            line-height: 27px;
+            color: #A5F8D3;
+            background-color: #023C40;
+        }
+
+        .cr.function.appBigFont .property-name {
+            float: none;
+        }
+
+        .cr.function.appBigFont .icon {
+            position: sticky;
+            bottom: 27px;
+        }
+
+
+        .promo {
+            display: none;
+            /* display: table; */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: auto;
+            color: lightblue;
+            background-color: rgba(0,0,0,0.4);
+            animation: promo-appear-animation 0.35s ease-out;
+        }
+
+        .promo-middle {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .promo-content {
+            width: 80vw;
+            height: 80vh;
+            max-width: 80vh;
+            max-height: 80vw;
+            margin: auto;
+            padding: 0;
+            font-size: 2.8vmax;
+            font-family: Futura, "Trebuchet MS", Arial, sans-serif;
+            text-align: center;
+            background-image: url("promo_back.png");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        }
+
+        .promo-header {
+            height: 10%;
+            padding: 2px 16px;
+        }
+
+        .promo-close {
+            width: 10%;
+            height: 100%;
+            text-align: left;
+            float: left;
+            font-size: 1.3em;
+            /* transition: 0.2s; */
+        }
+
+        .promo-close:hover {
+            /* transform: scale(1.25); */
+            cursor: pointer;
+        }
+
+        .promo-body {
+            padding: 8px 16px 16px 16px;
+            margin: auto;
+        }
+
+        .promo-body p {
+            margin-top: 0;
+            mix-blend-mode: color-dodge;
+        }
+
+        .link {
+            width: 100%;
+            display: inline-block;
+        }
+
+        .link img {
+            width: 100%;
+        }
+
+        @keyframes promo-appear-animation {
+            0% {
+                transform: scale(2.0);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1.0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <canvas></canvas>
+
+        <!-- Mother of God, pls forgive me -->
+        <div class="promo">
+            <div class="promo-middle">
+                <div class="promo-content">
+                    <div class="promo-header">
+                        <span class="promo-close">&times;</span>
+                    </div>
+                    <div class="promo-body">
+                        <div class="links-container">
+                            <a class="link" id="apple_link" target="_blank">
+                            </a>
+                            <a class="link" id="google_link" target="_blank">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="registerForm" class="register-box">
+            <h2>客户端注册</h2>
+            <label for="username">用户名 *<span class="error-message" id="usernameError"></span></label>
+            <input type="text" id="username" minlength="6">
+
+            <label for="company">公司 *<span class="error-message" id="companyError"></span></label>
+            <input type="text" id="company">
+
+            <label for="password">密码 *<span class="error-message" id="passwordError"></span></label>
+            <input type="password" id="password" minlength="8">
+            
+            <label for="repassword">确认密码 *<span class="error-message" id="repasswordError"></span></label>
+            <input type="password" id="repassword" minlength="8">
+
+            <label for="phone">Email *<span class="error-message" id="phoneOrEmailError"></span></label>
+            <input type="text" id="phoneOrEmail">
+            
+            <label for="captcha">验证码 *<span class="error-message" id="captchaError"></span></label>
+            <input type="text" id="captcha" style="width:285px">
+            <button id="sendCaptcha" style="height:42px;width:100px;margin-left:10px">发 送</button>
+
+            <br><br><button type="submit" id="registerButton">立即注册</button>
+            <div class="login-link">
+                已有账号？<a href="/login">立即登录</a>
+            </div>
+        </fodivrm>
+    </div>
+    <script type="text/javascript" src="static/dat.gui.min.js"></script>
+
+    <script>
+        const captchaBtn = document.getElementById('sendCaptcha');
+        captchaBtn.addEventListener('click', function () {
+            const phoneOrEmail = document.getElementById('phoneOrEmail').value;
+            const username = document.getElementById('username').value;
+            
+            fetch(`/api/captcha?username=${username}&phoneOrEmail=${phoneOrEmail}`,{method: 'POST'})
+
+            captchaBtn.disabled = true;
+            var countdown = 30;
+            var timer = setInterval(function () {
+                captchaBtn.textContent = countdown;
+                captchaBtn.style.backgroundColor = '#282c3480';
+                countdown--;
+                if (countdown < 0) {
+                    clearInterval(timer);
+                    captchaBtn.disabled = false;
+                    captchaBtn.textContent = '发送';
+                    captchaBtn.style.backgroundColor = '#007BFF';
+                }
+            }, 1000);
+        });
+
+        // 获取按钮元素
+        const regBtn = document.getElementById('registerButton');
+        // 为按钮添加点击事件监听器
+        regBtn.addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const repassword = document.getElementById('repassword').value;
+            const phoneOrEmail = document.getElementById('phoneOrEmail').value;
+            const company = document.getElementById('company').value;
+            const captcha = document.getElementById('captcha').value;
+
+            document.getElementById('usernameError').textContent = '';
+            document.getElementById('passwordError').textContent = '';
+            document.getElementById('repasswordError').textContent = '';
+            document.getElementById('phoneOrEmailError').textContent = '';
+            document.getElementById('companyError').textContent = '';
+            document.getElementById('captchaError').textContent = '';
+
+            const usernameRegex = /^[^\u4e00-\u9fa5]{6,}$/;
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+            const repasswordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            let hasError = false;
+
+            if (!usernameRegex.test(username)) {
+                document.getElementById('usernameError').textContent = '用户名长度需大于 6 位，且不得含有中文';
+                hasError = true;
+            }
+
+            if (!passwordRegex.test(password)) {
+                document.getElementById('passwordError').textContent = '密码长度需大于 8 位，且包含大小写字母';
+                hasError = true;
+            }
+
+            if (password != repassword) {
+                document.getElementById('repasswordError').textContent = '两次密码不一致';
+                hasError = true;
+            }
+
+            if (!phoneRegex.test(phoneOrEmail) && !emailRegex.test(phoneOrEmail)) {
+                document.getElementById('phoneOrEmailError').textContent = '请输入正确的手机号或邮箱';
+                hasError = true;
+            }
+            if (!company) {
+                document.getElementById('companyError').textContent = '公司名不能为空';
+                hasError = true;
+            }
+            
+            if (hasError) {
+                return;
+            }
+
+            if (!captcha) {
+                document.getElementById('captchaError').textContent = '验证码不能为空';
+                return;
+            }
+            const queryString = `company=${company}&username=${username}&password=${password}&phoneOrEmail=${phoneOrEmail}&captcha=${captcha}`;
+            regBtn.disabled = true;
+            regBtn.style.backgroundColor = 'grey';
+            const response = await fetch(`/postregister?${queryString}`,{method: 'POST'});
+            const result = await response.json();
+            if (result.message == '用户已注册') {
+                document.getElementById('usernameError').textContent = '用户已注册';
+            } else if (result.message == '邮箱已注册') {
+                document.getElementById('phoneOrEmailError').textContent = '手机/邮箱已注册';
+            } else if (result.message == '验证码错误') {
+                document.getElementById('captchaError').textContent = '验证码错误';
+            }else{
+                alert('注册成功，即将跳转至主页');
+                window.location.href = '/home';
+            };
+            regBtn.disabled = false;
+            regBtn.style.backgroundColor = '#007BFF';
+        });
+    </script>
+    <script>
+        window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+        ga('create', 'UA-105392568-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script async src="static/analytics.js"></script>
+    <script src="static//script.js"></script>
+    
+</body>
+</html>
