@@ -1,0 +1,21 @@
+flask
+werkzeug
+datetime
+uuid
+os
+random
+json
+requests
+re
+pymysql
+time
+flask_cors
+sqlalchemy
+volcenginesdkarkruntime Ark
+email
+smtplib
+alibabacloud_dysmsapi20170525
+alibabacloud_tea_openapi models
+alibabacloud_dysmsapi20170525 models
+alibabacloud_tea_util models as util_models
+alibabacloud_tea_util.client Client as UtilClient
