@@ -86,7 +86,6 @@ class User(UserMixin):
         self.password_hash = password_hash
 @login_manager.user_loader
 def load_user(username):
-    # 18cf19c412563831.natapp.cc
     conn = pymysql.connect(host='127.0.0.1', port=3306,user='', password='', database='', charset='utf8')
     cursor = conn.cursor()
     sql = f"SELECT * FROM user_reg WHERE user='{username}'" 
@@ -441,7 +440,6 @@ def postlogin():
     username = data['username']
     password = data['password']
     # remember = True
-    # 18cf19c412563831.natapp.cc
     conn = pymysql.connect(host='127.0.0.1', port=3306,user='', password='', database='', charset='utf8')
     cursor = conn.cursor()
     sql = f"SELECT * FROM user_reg where user = '{username}' and password = '{password}'"
@@ -517,7 +515,6 @@ def searchreexam():
             break
         query = build_query_reexam(name,app_num,ipc_class,decision_num,re_applicant,re_patentee,re_code,legal_base,decision_revise,decision_date,decision_result,decision_text,reexam_type,year)        
         try:
-            # 18cf19c412563831.natapp.cc
             connection = pymysql.connect(host='127.0.0.1', port=3306,user='', password='', database='', charset='utf8')
             cursor = connection.cursor()
             cursor.execute(query)
@@ -597,7 +594,6 @@ def searchpatent():
             date = f'{year}{month}'
             query = build_query_patent(name,app_num,ipc_class,publication_num,publication_type,agency,applicant,inventor,cited_document,related_document,application_date,publication_date,abstract,alltxt,date)
             try:
-                # 18cf19c412563831.natapp.cc
                 connection = pymysql.connect(host='127.0.0.1', port=3306,user='', password='', database='', charset='utf8')
                 cursor = connection.cursor()
                 cursor.execute(query)
@@ -682,14 +678,13 @@ def getdescription():
     try:
         ipc_array = [item.split(':')[0] for item in prompt["可能涉及的IPC分类号"]]
         conditions_1 = [f"分类 like '%{element}%'" for element in ipc_array]
-        # keywords = ai_doubao(';'.join(prompt["可能涉及的技术问题"]) + '从上述内容中提取用于检索文献的关键词,输出格式为[关键词1,关键词2,……]','ep-20240529091520-6zdpl').strip('[]')    
+        # keywords = ai_doubao(';'.join(prompt["可能涉及的技术问题"]) + '从上述内容中提取用于检索文献的关键词,输出格式为[关键词1,关键词2,……]','ep--6zdpl').strip('[]')    
         # keywords_array = [keyword.strip() for keyword in keywords.split(",")]
         # conditions_2 = [f"全文 like '%{element}%'" for element in keywords_array]
     except Exception as e:
         print(e)
         return jsonify({"Status":"OK","results": 'No Results'}), 404
     try:
-        # 18cf19c412563831.natapp.cc
         sql = f'select * from PATENT_DES_202207 where ({ " or ".join(conditions_1)})  order by rand() limit 5'   #and ({ " or ".join(conditions_2)})
         conn = pymysql.connect(host='127.0.0.1', port=3306,user='', password='', database='', charset='utf8')
         temp_results = []
